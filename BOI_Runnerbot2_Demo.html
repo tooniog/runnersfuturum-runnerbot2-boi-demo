@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bank of Industry — Enterprise Development Portal (Runnerbot 2 Demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --boi-green: #006C32; --boi-green-light: #0E7A3E; --boi-gold: #CEA766; --boi-gold-light: #E4C878; --boi-red: #E3261F;
+    --boi-cream: #FBF9F4; --boi-ink: #1F2420; --boi-muted: #5C6660; --boi-line: #E3E0D5;
+    --rn-navy: #0A2A97; --rn-navy-dark: #071D6B; --rn-green: #38E500;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--boi-cream); color: var(--boi-ink); font-family: 'Inter', system-ui, sans-serif; }
+  h1, h2, h3, .display { font-family: 'Fraunces', Georgia, serif; }
+
+  .boi-nav { background: var(--boi-green); color: white; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .boi-nav-left { display: flex; align-items: center; gap: 12px; }
+  .boi-crest { height: 40px; padding: 6px 12px; border-radius: 8px; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .boi-crest img { height: 100%; width: auto; display: block; }
+  .boi-nav-title { font-weight: 700; letter-spacing: 0.4px; font-size: 15px; }
+  .boi-nav-sub { font-size: 11px; color: var(--boi-gold-light); letter-spacing: 0.5px; }
+  .boi-nav-links { display: flex; gap: 28px; font-size: 13px; color: #DCE8E1; }
+  .boi-nav-links span.active { color: white; border-bottom: 2px solid var(--boi-gold); padding-bottom: 4px; }
+
+  .boi-hero { padding: 64px 32px 48px; max-width: 1100px; margin: 0 auto; }
+  .boi-eyebrow { color: var(--boi-gold); font-size: 12px; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; margin-bottom: 14px; }
+  .boi-hero h1 { font-size: 40px; line-height: 1.15; color: var(--boi-green); margin: 0 0 16px; font-weight: 600; max-width: 680px; }
+  .boi-hero p.lead { font-size: 17px; color: var(--boi-muted); max-width: 560px; line-height: 1.6; margin: 0 0 30px; }
+  .platform-sub { font-size: 15px; color: var(--boi-red); font-style: italic; font-weight: 600; margin: 0 0 18px; }
+
+  .prog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto 60px; padding: 0 32px; }
+  .prog-card { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 22px; }
+  .prog-card .tag { display: inline-block; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--boi-green); background: #EAF2ED; padding: 4px 9px; border-radius: 20px; font-weight: 700; margin-bottom: 12px; }
+  .prog-card h3 { font-size: 19px; margin: 0 0 8px; color: var(--boi-ink); font-weight: 600; }
+  .prog-card p { font-size: 13.5px; color: var(--boi-muted); line-height: 1.55; margin: 0; }
+  .boi-footer-strip { text-align: center; padding: 22px; color: var(--boi-muted); font-size: 12px; border-top: 1px solid var(--boi-line); }
+
+  .rn-launcher { position: fixed; bottom: 26px; right: 26px; width: 66px; height: 66px; border-radius: 50%; background: var(--rn-navy); box-shadow: 0 8px 24px rgba(10,42,151,0.35); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 40; transition: transform 0.15s ease; }
+  .rn-launcher:hover { transform: scale(1.06); }
+  .rn-launcher svg { width: 28px; height: 28px; }
+  .rn-launcher .pulse { position: absolute; width: 66px; height: 66px; border-radius: 50%; border: 2px solid var(--rn-green); animation: pulse 2.2s ease-out infinite; }
+  @keyframes pulse { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(1.5); opacity: 0; } }
+  .rn-launcher-label { position: fixed; bottom: 44px; right: 100px; background: var(--rn-navy-dark); color: white; padding: 8px 14px; border-radius: 8px; font-size: 12.5px; z-index: 40; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+  .rn-launcher-label:after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border-left: 6px solid var(--rn-navy-dark); border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+
+  .rn-panel { position: fixed; bottom: 24px; right: 24px; width: 420px; height: 660px; background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(10,20,60,0.28); display: none; flex-direction: column; overflow: hidden; z-index: 50; }
+  .rn-panel.open { display: flex; }
+  .rn-head { background: var(--rn-navy); color: white; padding: 14px 16px 10px; }
+  .rn-head-row { display: flex; align-items: center; gap: 10px; }
+  .rn-head-badge { width: 34px; height: 34px; border-radius: 50%; background: var(--rn-green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .rn-head-badge svg { width: 18px; height: 18px; }
+  .rn-head-text { flex: 1; }
+  .rn-head-text .name { font-weight: 700; font-size: 14px; }
+  .rn-head-text .status { font-size: 10.5px; color: #B9C6EE; display: flex; align-items: center; gap: 5px; }
+  .rn-head-text .status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rn-green); display: inline-block; }
+  .rn-close { cursor: pointer; opacity: 0.75; font-size: 20px; line-height: 1; padding: 4px; }
+  .rn-close:hover { opacity: 1; }
+
+  .rn-lang-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .rn-lang-btn { background: rgba(255,255,255,0.12); color: #D6DDF5; border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .rn-lang-btn.active { background: var(--rn-green); color: var(--rn-navy-dark); border-color: var(--rn-green); font-weight: 700; }
+  .rn-plain-toggle { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 11px; color: #C7D0F0; }
+  .rn-switch { width: 30px; height: 16px; background: rgba(255,255,255,0.25); border-radius: 10px; position: relative; cursor: pointer; flex-shrink: 0; }
+  .rn-switch .knob { width: 12px; height: 12px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.15s ease; }
+  .rn-switch.on { background: var(--rn-green); }
+  .rn-switch.on .knob { left: 16px; }
+  .rn-switch.disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .rn-disclosure { background: #F0F3FC; color: #364A8C; font-size: 10px; padding: 6px 16px; text-align: center; border-bottom: 1px solid #E1E7F8; }
+  .rn-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: #F7F8FB; }
+  .rn-msg { max-width: 84%; padding: 10px 13px; border-radius: 14px; font-size: 13.5px; line-height: 1.5; }
+  .rn-msg.bot { background: white; border: 1px solid #E7EAF3; color: #23262E; align-self: flex-start; border-bottom-left-radius: 4px; }
+  .rn-msg.bot.note { background: #FFF8E8; border-color: #F0E0B8; color: #6B5518; font-style: italic; font-size: 12px; }
+  .rn-msg.user { background: var(--rn-navy); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .rn-msg.typing { display: flex; gap: 4px; padding: 13px 15px; }
+  .rn-msg.typing span { width: 6px; height: 6px; border-radius: 50%; background: #A7AEC2; display: inline-block; animation: bounce 1.2s infinite; }
+  .rn-msg.typing span:nth-child(2) { animation-delay: 0.15s; }
+  .rn-msg.typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+
+  .rn-checklist { background: white; border: 1px solid #E7EAF3; border-radius: 10px; padding: 10px 13px; font-size: 12.5px; align-self: stretch; }
+  .rn-checklist .title { font-weight: 700; color: var(--rn-navy); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+  .rn-checklist .item { display: flex; align-items: center; gap: 7px; padding: 3px 0; color: #3A3F4B; }
+  .rn-checklist .item .box { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid #C7CCDB; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .rn-checklist .item.done .box { background: var(--rn-green); border-color: var(--rn-green); }
+  .rn-checklist .item.done .box:after { content: '✓'; color: white; font-size: 10px; font-weight: 700; }
+  .rn-score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .rn-score-bar { flex: 1; height: 8px; background: #EEF0F5; border-radius: 4px; overflow: hidden; }
+  .rn-score-fill { height: 100%; background: var(--rn-green); border-radius: 4px; transition: width 0.4s ease; }
+  .rn-score-pct { font-weight: 700; color: var(--rn-navy); font-size: 12.5px; min-width: 32px; text-align: right; }
+  .rn-score-sub { font-size: 10.5px; color: #7A8194; line-height: 1.4; margin-bottom: 8px; }
+  .index-preview { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #E7EAF3; }
+  .index-preview .ip-label { font-size: 10px; color: #9AA1B0; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; font-weight: 700; }
+  .dim-row { display: grid; grid-template-columns: 118px 1fr 70px; align-items: center; gap: 8px; padding: 3px 0; }
+  .dim-name { font-size: 10.5px; color: #4A5063; }
+  .dim-bar-wrap { height: 6px; background: #EEF0F5; border-radius: 3px; overflow: hidden; }
+  .dim-bar { height: 100%; background: var(--rn-green); border-radius: 3px; }
+  .dim-bar.empty { width: 0; background: #E4E6EC; }
+  .dim-val { font-size: 10px; color: #6B7280; text-align: right; }
+  .dim-val.soon { font-style: italic; color: #B0B6C2; }
+
+  .action-centre { background: white; border: 1px solid #E7EAF3; border-radius: 10px; padding: 14px 16px; align-self: stretch; }
+  .ac-title { font-weight: 700; color: var(--rn-navy); font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
+  .ac-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 12.5px; color: #23262E; }
+  .ac-done { text-decoration: line-through; color: #9AA1B0; }
+
+  .rn-options { padding: 10px 14px 14px; display: flex; flex-wrap: wrap; gap: 8px; background: white; border-top: 1px solid #EEF0F5; }
+  .rn-opt { border: 1.4px solid var(--rn-navy); color: var(--rn-navy); background: white; border-radius: 20px; padding: 7px 13px; font-size: 12.5px; cursor: pointer; transition: all 0.12s ease; font-family: 'Inter', sans-serif; }
+  .rn-opt:hover { background: var(--rn-navy); color: white; }
+  .rn-opt.escalate { border-color: var(--boi-gold); color: #8A6A1E; }
+  .rn-opt.escalate:hover { background: var(--boi-gold); color: white; }
+  .rn-restart { text-align: center; padding: 6px 0 10px; }
+  .rn-restart span { font-size: 11px; color: #8A93A8; cursor: pointer; text-decoration: underline; }
+
+  @media (max-width: 460px) {
+    .prog-grid { grid-template-columns: 1fr; }
+    .rn-panel { width: 94vw; right: 3vw; height: 78vh; }
+    .boi-nav-links { display: none; }
+  }
+
+  .pilot-banner { max-width: 1100px; margin: 0 auto 28px; padding: 0 32px; }
+  .pilot-banner > div, .pilot-banner { display: flex; flex-wrap: wrap; gap: 6px 4px; align-items: center; }
+  .pilot-banner span { font-size: 11.5px; color: var(--boi-green); font-weight: 700; letter-spacing: 0.3px; }
+  .pilot-banner span.sep { color: var(--boi-gold); font-weight: 400; }
+  .pilot-banner { background: #EFF6F1; border: 1px solid #D8E9DE; border-radius: 30px; padding: 10px 22px; }
+
+  .view-toggle-row { max-width: 1100px; margin: 0 auto 8px; padding: 0 32px; }
+  .view-toggle { display: inline-flex; background: #EDEBE1; border-radius: 10px; padding: 4px; gap: 4px; }
+  .view-opt { padding: 8px 16px; border-radius: 7px; font-size: 12.5px; font-weight: 600; color: var(--boi-muted); cursor: pointer; }
+  .view-opt.active { background: var(--boi-green); color: white; }
+
+  .section-title { font-family: 'Fraunces', serif; font-size: 24px; color: var(--boi-green); font-weight: 600; margin-bottom: 4px; }
+  .section-sub { color: var(--boi-muted); font-size: 13.5px; margin-bottom: 22px; }
+  .journey-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .journey-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 0; background: white; border: 1px solid var(--boi-line); border-radius: 12px; padding: 26px 20px; }
+  .journey-step { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 92px; text-align: center; }
+  .journey-dot { width: 30px; height: 30px; border-radius: 50%; background: var(--boi-green); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12.5px; }
+  .journey-label { font-size: 11px; color: var(--boi-ink); font-weight: 600; line-height: 1.3; }
+  .journey-arrow { color: var(--boi-gold); font-size: 15px; margin: 0 2px; }
+  .journey-step.clickable { cursor: pointer; transition: transform 0.12s ease; }
+  .journey-step.clickable:hover { transform: translateY(-2px); }
+  .journey-step.active .journey-dot { background: var(--boi-gold); }
+  .journey-step.active .journey-label { color: var(--boi-green); }
+  .journey-detail { display: none; margin-top: 16px; background: #F5F8F6; border: 1px solid #DCEAE1; border-radius: 8px; padding: 14px 18px; font-size: 13px; color: var(--boi-ink); line-height: 1.5; }
+  .journey-detail.show { display: block; }
+
+  .why-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .why-card { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 24px 20px; }
+  .why-num { width: 30px; height: 30px; border-radius: 50%; background: var(--boi-gold); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; margin-bottom: 12px; }
+  .why-card h3 { font-size: 15.5px; margin: 0 0 6px; font-family: 'Inter', sans-serif; font-weight: 700; color: var(--boi-ink); }
+  .why-card p { font-size: 13px; color: var(--boi-muted); line-height: 1.5; margin: 0; }
+
+  .staff-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .staff-flag { background: #FFF3E0; border: 1px solid #F0D9A8; color: #7A5A12; font-size: 12px; padding: 10px 16px; border-radius: 8px; margin-bottom: 24px; font-weight: 600; }
+  .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+  .dash-card { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 18px; }
+  .dash-card .dv { font-family: 'Fraunces', serif; font-size: 26px; color: var(--boi-green); font-weight: 600; }
+  .dash-card .dl { font-size: 11.5px; color: var(--boi-muted); margin-top: 4px; }
+  .report-card { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 24px; }
+  .report-card h4 { margin: 0 0 14px; font-size: 15px; color: var(--boi-green); }
+  .report-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #F0EEE4; font-size: 13px; }
+  .report-row:last-child { border-bottom: none; }
+  .report-row .rlabel { color: var(--boi-ink); font-weight: 600; }
+  .report-row .rval { color: var(--boi-muted); font-style: italic; }
+
+  .officer-queue { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 6px 20px; }
+  .oq-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid #F0EEE4; font-size: 13px; color: var(--boi-ink); }
+  .oq-row:last-child { border-bottom: none; }
+  .oq-tag { flex-shrink: 0; width: 90px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: var(--boi-green); background: #EAF2ED; padding: 4px 8px; border-radius: 20px; text-align: center; }
+
+  .heat-grid { display: flex; flex-direction: column; gap: 10px; background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 20px; }
+  .heat-card { display: grid; grid-template-columns: 90px 1fr 90px; align-items: center; gap: 12px; }
+  .heat-state { font-size: 13px; font-weight: 600; color: var(--boi-ink); }
+  .heat-bar-wrap { height: 10px; background: #EEF0EB; border-radius: 5px; overflow: hidden; }
+  .heat-bar { height: 100%; background: var(--boi-gold); border-radius: 5px; }
+  .heat-n { font-size: 11.5px; color: var(--boi-muted); text-align: right; font-style: italic; }
+
+  .insight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .insight-card { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 18px; }
+  .insight-card .ic-stat { font-family: 'Fraunces', serif; font-size: 20px; color: var(--boi-green); font-weight: 600; margin-bottom: 6px; }
+  .insight-card .ic-text { font-size: 12.5px; color: var(--boi-ink); line-height: 1.4; margin-bottom: 10px; }
+  .insight-card .ic-rec { font-size: 11.5px; color: var(--boi-gold); font-weight: 600; }
+
+  @media (max-width: 700px) { .insight-grid { grid-template-columns: 1fr; } .heat-card { grid-template-columns: 70px 1fr 70px; } }
+
+  .exec-snapshot { background: var(--boi-green); border-radius: 12px; padding: 24px 26px; margin-bottom: 32px; }
+  .exec-welcome { font-family: 'Fraunces', serif; font-size: 21px; color: white; font-weight: 600; margin-bottom: 16px; }
+  .exec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .exec-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 14px; }
+  .exec-card .ev { font-family: 'Fraunces', serif; font-size: 17px; color: var(--boi-gold-light); font-weight: 600; margin-bottom: 3px; }
+  .exec-card .el { font-size: 10.5px; color: #DCE8E1; }
+  .exec-note { font-size: 10.5px; color: #B8CCC1; margin-top: 14px; font-style: italic; }
+  @media (max-width: 700px) { .exec-grid { grid-template-columns: 1fr 1fr; } }
+
+  .memory-wrap { max-width: 100%; margin-bottom: 8px; }
+  .memory-text { font-size: 13.5px; color: var(--boi-ink); line-height: 1.65; background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 20px 24px; max-width: 800px; }
+
+  .transform-card { background: white; border: 1px solid #E7EAF3; border-radius: 10px; padding: 14px; align-self: stretch; }
+  .tc-flag { background: #FFF3E0; border: 1px solid #F0D9A8; color: #7A5A12; font-size: 10px; padding: 6px 10px; border-radius: 6px; margin-bottom: 10px; font-weight: 600; }
+  .tc-idea { font-size: 12px; font-style: italic; color: var(--rn-navy); margin-bottom: 10px; }
+  .tc-section { padding: 7px 0; border-bottom: 1px solid #F0F1F6; }
+  .tc-section:last-child { border-bottom: none; }
+  .tc-label { font-size: 10.5px; font-weight: 700; color: var(--rn-navy); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+  .tc-text { font-size: 12px; color: #3A3F4B; line-height: 1.45; }
+
+  .transparency-banner { background: var(--boi-ink); color: #E8E6DC; text-align: center; font-size: 12px; padding: 9px 20px; }
+
+  .lang-draft-badge { display: none; background: #FFF3E0; border: 1px solid #F0D9A8; color: #7A5A12; font-size: 10.5px; padding: 5px 10px; border-radius: 6px; margin: 8px 16px 0; font-weight: 600; }
+  .lang-draft-badge.show { display: block; }
+
+  .roadmap-card { background: white; border: 1px solid #E7EAF3; border-radius: 10px; padding: 14px; align-self: stretch; }
+  .roadmap-card .title { font-weight: 700; color: var(--rn-navy); font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; }
+  .roadmap-stage { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 12.5px; color: #23262E; }
+  .roadmap-stage .chk { color: var(--rn-green); font-weight: 700; }
+  .roadmap-milestone { display: flex; align-items: flex-start; gap: 7px; padding: 4px 0; font-size: 12.5px; color: #3A3F4B; }
+  .roadmap-milestone .sq { width: 13px; height: 13px; border: 1.5px solid #C7CCDB; border-radius: 3px; margin-top: 2px; flex-shrink: 0; }
+  .roadmap-est { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #E7EAF3; font-size: 11.5px; color: #7A8194; }
+
+  .escalation-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .escalation-flow { background: white; border: 1px solid var(--boi-line); border-radius: 12px; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .esc-node { padding: 10px 22px; border-radius: 8px; font-size: 13px; font-weight: 600; text-align: center; }
+  .esc-node.entrepreneur { background: #EAF2ED; color: var(--boi-green); }
+  .esc-node.runnerbot { background: #EEF0FC; color: var(--rn-navy); }
+  .esc-node.question { background: #FFF3E0; color: #8A6A1E; }
+  .esc-node.human { background: var(--boi-green); color: white; }
+  .esc-arrow-down { color: #B9BFC9; font-size: 16px; }
+
+  .safety-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .safety-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .safety-card { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 18px; }
+  .safety-card .sf-icon { font-size: 22px; margin-bottom: 8px; }
+  .safety-card h4 { font-size: 14px; margin: 0 0 6px; color: var(--boi-ink); }
+  .safety-card p { font-size: 12px; color: var(--boi-muted); line-height: 1.5; margin: 0; }
+
+  .why-compare-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .compare-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; background: white; border: 1px solid var(--boi-line); border-radius: 12px; padding: 24px; }
+  .compare-node { font-size: 12.5px; color: var(--boi-muted); background: #F5F5F0; padding: 9px 14px; border-radius: 20px; }
+  .compare-node.highlight { background: var(--boi-green); color: white; font-weight: 700; }
+  .compare-arrow { color: var(--boi-gold); font-size: 14px; }
+  @media (max-width: 700px) { .safety-grid { grid-template-columns: 1fr; } }
+
+  .passport-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .passport-card { background: white; border: 2px solid var(--boi-gold); border-radius: 14px; padding: 26px; }
+  .passport-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 14px; }
+  .stamp { text-align: center; padding: 14px 6px; border-radius: 10px; border: 2px dashed #E0DED0; }
+  .stamp.stamped { border: 2px solid var(--boi-green); background: #F3FAF5; }
+  .stamp-mark { font-size: 20px; color: #C7C4B4; margin-bottom: 6px; }
+  .stamp.stamped .stamp-mark { color: var(--boi-green); }
+  .stamp-label { font-size: 10px; color: var(--boi-ink); font-weight: 600; line-height: 1.3; }
+  .passport-note { font-size: 11px; color: var(--boi-muted); font-style: italic; text-align: center; }
+  @media (max-width: 700px) { .passport-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .stories-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .story-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .story-card { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 20px; }
+  .story-tag { display: inline-block; font-size: 9.5px; background: #FFF3E0; color: #7A5A12; padding: 3px 8px; border-radius: 10px; font-weight: 700; margin-bottom: 10px; }
+  .story-card h4 { font-size: 15px; margin: 0 0 12px; color: var(--boi-ink); }
+  .story-row { display: flex; gap: 10px; padding: 6px 0; font-size: 12px; color: var(--boi-muted); line-height: 1.4; }
+  .story-row .sl { flex-shrink: 0; width: 90px; font-weight: 700; color: var(--boi-green); font-size: 10.5px; text-transform: uppercase; }
+  @media (max-width: 700px) { .story-grid { grid-template-columns: 1fr; } }
+
+  .learn-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .learn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .learn-card { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 16px; }
+  .learn-card h4 { font-size: 13.5px; margin: 0 0 6px; color: var(--boi-ink); }
+  .learn-card .lmeta { font-size: 10.5px; color: var(--boi-muted); display: flex; justify-content: space-between; margin-top: 10px; }
+  .learn-badge { display: inline-block; font-size: 9.5px; background: #EAF2ED; color: var(--boi-green); padding: 2px 7px; border-radius: 10px; font-weight: 700; }
+
+  .sector-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .sector-card { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 18px 10px; text-align: center; transition: transform 0.12s ease; }
+  .sector-card:hover { transform: translateY(-2px); border-color: var(--boi-gold); }
+  .sector-icon { font-size: 26px; margin-bottom: 8px; }
+  .sector-name { font-size: 11.5px; font-weight: 600; color: var(--boi-ink); }
+  @media (max-width: 700px) { .sector-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .align-wrap { max-width: 1100px; margin: 0 auto 56px; padding: 0 32px; }
+  .align-list { background: white; border: 1px solid var(--boi-line); border-radius: 10px; padding: 22px 26px; }
+  .align-list .item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; font-size: 13.5px; color: var(--boi-ink); }
+  .align-list .item .b { color: var(--boi-gold); font-weight: 700; }
+
+  @media (max-width: 700px) { .learn-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+
+  <div class="boi-nav">
+    <div class="boi-nav-left">
+      <div class="boi-crest"><img src="data:image/png;base64,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" alt="Bank of Industry"></div>
+      <div><div class="boi-nav-sub" style="margin-top:2px;">Enterprise Development Portal</div></div>
+    </div>
+    <div class="boi-nav-links"><span class="active">Programmes</span><span>GLOW</span><span>iDICE</span><span>SME Consultants</span><span>About BOI</span></div>
+  </div>
+
+  <div class="transparency-banner">This is a reference demonstration illustrating how Runnerbot 2 could support BOI's entrepreneur guidance services. It is not connected to BOI's live systems or decision-making processes.</div>
+
+  <div class="boi-hero">
+    <div class="boi-eyebrow">Simulation — Reference Environment</div>
+    <h1 class="display">Runnerbot 2 Enterprise Development Platform</h1>
+    <p class="platform-sub">Powered by Runnerbot Intelligence</p>
+    <p class="lead">Helping institutions understand, support and develop entrepreneurs through safe AI guidance, structured workflows and actionable insights — from first idea to funding-ready, in English, Nigerian Pidgin, Yoruba, Hausa and Igbo, with a Plain Language mode for applicants who find reading and writing harder.</p>
+  </div>
+
+  <div class="pilot-banner">
+    <span>90-Day Institutional Pilot</span><span class="sep">·</span><span>No Upfront Technology Fee</span><span class="sep">·</span><span>Measured KPIs</span><span class="sep">·</span><span>Human Oversight Throughout</span><span class="sep">·</span><span>Reviewed at Week 12</span>
+  </div>
+
+  <div class="view-toggle-row">
+    <div class="view-toggle" id="viewToggle">
+      <div class="view-opt active" data-view="entrepreneur" onclick="setView('entrepreneur')">Entrepreneur View</div>
+      <div class="view-opt" data-view="staff" onclick="setView('staff')">Pilot Command Centre</div>
+    </div>
+  </div>
+
+  <div id="entrepreneurView"></div>
+  <div id="staffView" style="display:none;"></div>
+
+  <script>
+  document.getElementById('entrepreneurView').innerHTML = `
+  <div class="prog-grid">
+    <div class="prog-card"><span class="tag">Women-Led Business</span><h3 class="display">GLOW</h3><p>Guaranteed Loans for Women — up to ₦50 million at 7% interest, 5-year tenor, for women-owned and women-led enterprises.</p></div>
+    <div class="prog-card"><span class="tag">Tech &amp; Creative</span><h3 class="display">iDICE</h3><p>Supporting Nigerians aged 15–35 in digital and creative enterprise — grants through Founders Lab, debt financing to scale.</p></div>
+    <div class="prog-card"><span class="tag">Grassroots &amp; Micro</span><h3 class="display">Micro Business Financing</h3><p>Tailored, low-interest support for micro-enterprises in disadvantaged and grassroots sectors nationwide.</p></div>
+  </div>
+
+  <div class="journey-wrap">
+    <div class="section-title">Entrepreneur Journey Map</div>
+    <div class="section-sub">Not just a chat — a national enterprise development pathway. Click any stage.</div>
+    <div class="journey-row" id="journeyRow"></div>
+    <div class="journey-detail" id="journeyDetail"></div>
+  </div>
+
+  <div class="why-wrap">
+    <div class="section-title">Why BOI?</div>
+    <div class="why-grid">
+      <div class="why-card"><div class="why-num">1</div><h3>Entrepreneur Support</h3><p>Guidance in five languages, at any hour, without adding headcount.</p></div>
+      <div class="why-card"><div class="why-num">2</div><h3>Operational Efficiency</h3><p>Routine questions handled by Runnerbot 2, freeing staff and BDSPs for complex cases.</p></div>
+      <div class="why-card"><div class="why-num">3</div><h3>National Enterprise Development</h3><p>A scalable support layer aligned with BOI's 2025-2027 Corporate Strategy.</p></div>
+    </div>
+  </div>
+
+  <div class="escalation-wrap">
+    <div class="section-title">Where AI Stops and People Take Over</div>
+    <div class="section-sub">One workflow, always the same, regardless of language or topic.</div>
+    <div class="escalation-flow">
+      <div class="esc-node entrepreneur">Entrepreneur</div>
+      <div class="esc-arrow-down">↓</div>
+      <div class="esc-node runnerbot">Runnerbot 2</div>
+      <div class="esc-arrow-down">↓</div>
+      <div class="esc-node runnerbot">Routine Guidance</div>
+      <div class="esc-arrow-down">↓</div>
+      <div class="esc-node question">Complex Question?</div>
+      <div class="esc-arrow-down">↓</div>
+      <div class="esc-node human">Escalate to BOI Officer</div>
+      <div class="esc-arrow-down">↓</div>
+      <div class="esc-node human">Human Decision</div>
+    </div>
+  </div>
+
+  <div class="safety-wrap">
+    <div class="section-title">AI Safety &amp; Governance</div>
+    <div class="section-sub">The principles this pilot is built on \u2014 not a claim, a design constraint.</div>
+    <div class="safety-grid">
+      <div class="safety-card"><div class="sf-icon">\uD83D\uDC64</div><h4>Human Oversight</h4><p>Every complex or sensitive case escalates to a BOI officer. Runnerbot 2 makes no lending decisions.</p></div>
+      <div class="safety-card"><div class="sf-icon">\u2705</div><h4>Consent</h4><p>Preferences are only learned with explicit consent \u2014 nothing is inferred silently.</p></div>
+      <div class="safety-card"><div class="sf-icon">\u21AA\uFE0F</div><h4>Escalation</h4><p>Escalation is the default whenever confidence is low, not an exception path.</p></div>
+      <div class="safety-card"><div class="sf-icon">\uD83D\uDD12</div><h4>Privacy</h4><p>Data collection is limited to what the guidance function needs, aligned with NDPA 2023.</p></div>
+      <div class="safety-card"><div class="sf-icon">\uD83C\uDFDB\uFE0F</div><h4>Governance</h4><p>Data-handling terms are agreed with BOI in advance, not set unilaterally.</p></div>
+      <div class="safety-card"><div class="sf-icon">\uD83D\uDCCB</div><h4>Transparency</h4><p>This is a simulation. Every illustrative figure in this demo is labelled as such.</p></div>
+    </div>
+  </div>
+
+  <div class="why-compare-wrap">
+    <div class="section-title">Why Runnerbot?</div>
+    <div class="section-sub">Not a comparison to any named service \u2014 a comparison to how entrepreneurs typically get help today.</div>
+    <div class="compare-flow">
+      <div class="compare-node">Traditional FAQ</div><div class="compare-arrow">\u2192</div>
+      <div class="compare-node">Search</div><div class="compare-arrow">\u2192</div>
+      <div class="compare-node">PDFs</div><div class="compare-arrow">\u2192</div>
+      <div class="compare-node">Email, wait for reply</div><div class="compare-arrow">\u2192</div>
+      <div class="compare-node highlight">Runnerbot 2 \u2014 one conversation</div>
+    </div>
+  </div>
+
+  <div class="learn-wrap">
+    <div class="section-title">Entrepreneur Learning Hub</div>
+    <div class="section-sub">Structured resources, not just answers to one-off questions.</div>
+    <div class="learn-grid">
+      ${[["Starting a Business","6 min"],["Financial Basics","8 min"],["Business Registration","5 min"],["Cash-Flow Fundamentals","7 min"],["Marketing Essentials","6 min"],["Record Keeping","5 min"],["Business Planning","9 min"],["Working With a BDSP","4 min"]].map(([t,m]) => `
+      <div class="learn-card"><span class="learn-badge">GUIDE</span><h4 style="margin-top:8px;">${t}</h4><div class="lmeta"><span>${m} read</span><span>Not yet started</span></div></div>
+      `).join('')}
+    </div>
+  </div>
+
+  <div class="learn-wrap">
+    <div class="section-title">Knowledge Library</div>
+    <div class="section-sub">Guidance organised by sector, so entrepreneurs find what's relevant to them faster.</div>
+    <div class="sector-grid">
+      ${[["Agriculture","\uD83C\uDF3E"],["Manufacturing","\u2699\uFE0F"],["Women Entrepreneurs","\uD83D\uDC69\u200D\uD83D\uDCBC"],["Creative Economy","\uD83C\uDFA8"],["Youth","\uD83C\uDF31"],["Technology","\uD83D\uDCBB"],["Export","\uD83D\uDEA2"],["MSME","\uD83C\uDFEA"],["Financial Literacy","\uD83D\uDCB0"]].map(([t,icon]) => `
+      <div class="sector-card"><div class="sector-icon">${icon}</div><div class="sector-name">${t}</div></div>
+      `).join('')}
+    </div>
+  </div>
+
+  <div class="passport-wrap">
+    <div class="section-title">Enterprise Readiness Passport</div>
+    <div class="section-sub">A tangible way to show progress \u2014 without implying any guarantee of funding.</div>
+    <div class="passport-card">
+      <div class="passport-grid">
+        ${[["Business Fundamentals","\u2713",true],["Market Understanding","\u2713",true],["Financial Planning","",false],["Operations","",false],["Documentation","\u2713",true],["Growth Planning","",false]].map(([cat,mark,stamped]) => `
+        <div class="stamp ${stamped ? 'stamped' : ''}"><div class="stamp-mark">${stamped ? '\u2713' : '\u2014'}</div><div class="stamp-label">${cat}</div></div>
+        `).join('')}
+      </div>
+      <div class="passport-note">Illustrative example passport. As each category is genuinely completed, it stamps \u2014 no category is marked complete without real preparation behind it.</div>
+    </div>
+  </div>
+
+  <div class="stories-wrap">
+    <div class="section-title">Illustrative Journeys</div>
+    <div class="section-sub">Composite examples, not real applicants \u2014 no pilot has run yet.</div>
+    <div class="story-grid">
+      <div class="story-card">
+        <div class="story-tag">Composite example</div>
+        <h4>A food vendor in Lagos</h4>
+        <div class="story-row"><span class="sl">Before</span><span>Selling informally, no records, unsure how to start a BOI application.</span></div>
+        <div class="story-row"><span class="sl">Supported</span><span>Guided through CAC registration and a 4-week cost-tracking routine.</span></div>
+        <div class="story-row"><span class="sl">After (illustrative)</span><span>Funding-ready application submitted to Micro Business Financing.</span></div>
+      </div>
+      <div class="story-card">
+        <div class="story-tag">Composite example</div>
+        <h4>A tailoring business in Kaduna</h4>
+        <div class="story-row"><span class="sl">Before</span><span>Established business, no idea GLOW existed or that she qualified.</span></div>
+        <div class="story-row"><span class="sl">Supported</span><span>Learned eligibility, gathered financial records with guidance.</span></div>
+        <div class="story-row"><span class="sl">After (illustrative)</span><span>Connected to a BDSP for final review before applying.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="align-wrap">
+    <div class="section-title">Supporting Nigeria's Enterprise Development</div>
+    <div class="align-list">
+      <div class="item"><span class="b">→</span> Improve access to guidance, in the language an entrepreneur is most comfortable in</div>
+      <div class="item"><span class="b">→</span> Support entrepreneurs before they apply, not only after</div>
+      <div class="item"><span class="b">→</span> Enhance digital service delivery across BOI's 33 state offices</div>
+      <div class="item"><span class="b">→</span> Reduce repetitive administrative work on staff and BDSPs</div>
+      <div class="item"><span class="b">→</span> Complement existing BOI services — support, not transformation</div>
+    </div>
+  </div>
+
+  <div class="align-wrap" style="margin-bottom:56px;">
+    <div class="section-title">Future Capabilities</div>
+    <div class="section-sub">What's next \u2014 stated as roadmap, not current capability.</div>
+    <div class="align-list">
+      <div class="item"><span class="b">\u2192</span> Voice support \u2014 for applicants who prefer speaking over typing</div>
+      <div class="item"><span class="b">\u2192</span> Deeper accessibility \u2014 building on the Plain Language mode already in this demo</div>
+      <div class="item"><span class="b">\u2192</span> Offline guidance \u2014 for areas with limited connectivity</div>
+      <div class="item"><span class="b">\u2192</span> Integration with institutional systems \u2014 a future exploration with BOI, not a current feature</div>
+    </div>
+  </div>
+
+  <div class="boi-footer-strip">Bank of Industry Limited · 33 State Offices Nationwide · This is a reference simulation prepared by Runners Futurum, not a live BOI system.</div>
+  `;
+
+  document.getElementById('staffView').innerHTML = `
+  <div class="staff-wrap">
+    <div class="staff-flag">⚠ ILLUSTRATIVE TEMPLATE — this view shows the layout BOI would see, populated with placeholder values. No pilot has run yet; every figure below is populated by real pilot data only once the 90-day pilot is underway.</div>
+
+    <div class="exec-snapshot">
+      <div class="exec-welcome">Welcome back — Today's Enterprise Snapshot</div>
+      <div class="exec-grid">
+        <div class="exec-card"><div class="ev">2,438 (sample)</div><div class="el">Entrepreneurs supported</div></div>
+        <div class="exec-card"><div class="ev">67% (sample)</div><div class="el">Average Enterprise Readiness</div></div>
+        <div class="exec-card"><div class="ev">Financial Forecasting (sample)</div><div class="el">Most requested topic</div></div>
+        <div class="exec-card"><div class="ev">14% (sample)</div><div class="el">Human escalations</div></div>
+        <div class="exec-card"><div class="ev">Healthy</div><div class="el">Pilot health</div></div>
+        <div class="exec-card"><div class="ev">Increase Cash-Flow Education</div><div class="el">Recommended action</div></div>
+      </div>
+      <div class="exec-note">Illustrative layout \u2014 populates from real pilot data once the 90-day pilot begins.</div>
+    </div>
+
+    <div class="section-title">Pilot Command Centre</div>
+    <div class="section-sub">Template preview — pilot health, engagement, officer workload and knowledge gaps, for Bank of Industry management.</div>
+    <div class="dash-grid">
+      <div class="dash-card"><div class="dv">—</div><div class="dl">Entrepreneurs Supported</div></div>
+      <div class="dash-card"><div class="dv">—</div><div class="dl">AI Conversations Completed</div></div>
+      <div class="dash-card"><div class="dv">—</div><div class="dl">Avg. Response Time</div></div>
+      <div class="dash-card"><div class="dv">—%</div><div class="dl">Human Escalation Rate</div></div>
+      <div class="dash-card"><div class="dv">—</div><div class="dl">Readiness Assessments Completed</div></div>
+      <div class="dash-card"><div class="dv">—%</div><div class="dl">Repeat Users</div></div>
+      <div class="dash-card"><div class="dv">—</div><div class="dl">Resource Downloads</div></div>
+      <div class="dash-card"><div class="dv">—</div><div class="dl">Most Requested Topics</div></div>
+    </div>
+
+    <div class="section-title" style="margin-top:28px;">Officer Mode — Today's Queue</div>
+    <div class="section-sub">Illustrative sample data — shows the layout, not real caseload.</div>
+    <div class="officer-queue">
+      <div class="oq-row"><span class="oq-tag">Escalated</span><span>3 entrepreneurs awaiting human review</span></div>
+      <div class="oq-row"><span class="oq-tag">Trend</span><span>Most common question this week: cash-flow forecasting</span></div>
+      <div class="oq-row"><span class="oq-tag">Note</span><span>Knowledge gap detected: manufacturing gross-margin questions</span></div>
+      <div class="oq-row"><span class="oq-tag">Suggested</span><span>Consider a short cash-flow forecasting webinar</span></div>
+    </div>
+
+    <div class="section-title" style="margin-top:28px;">National Demand — Illustrative Sample Data</div>
+    <div class="section-sub">Shows the kind of regional view the platform could provide once real usage exists — not current BOI data.</div>
+    <div class="heat-grid">
+      ${[["Lagos",420],["Kaduna",130],["Kano",220],["Enugu",94],["Rivers",88]].map(([s,n]) => `
+        <div class="heat-card"><div class="heat-state">${s}</div><div class="heat-bar-wrap"><div class="heat-bar" style="width:${Math.round(n/420*100)}%"></div></div><div class="heat-n">${n} (sample)</div></div>
+      `).join('')}
+    </div>
+
+    <div class="section-title" style="margin-top:28px;">Weekly Intelligence — Illustrative Sample Data</div>
+    <div class="section-sub">The kind of institutional intelligence real usage could surface — not a claim about actual entrepreneur behaviour today.</div>
+    <div class="insight-grid">
+      <div class="insight-card"><div class="ic-stat">38% (sample)</div><div class="ic-text">of entrepreneurs struggle with pricing</div><div class="ic-rec">→ Recommendation: launch a Pricing Essentials webinar</div></div>
+      <div class="insight-card"><div class="ic-stat">24% (sample)</div><div class="ic-text">struggle with bookkeeping</div><div class="ic-rec">→ Recommendation: create bookkeeping templates</div></div>
+      <div class="insight-card"><div class="ic-stat">17% (sample)</div><div class="ic-text">struggle with CAC registration</div><div class="ic-rec">→ Recommendation: improve registration guidance</div></div>
+      <div class="insight-card"><div class="ic-text"><strong>Manufacturing entrepreneurs</strong> struggle with pricing (sample)</div><div class="ic-rec">→ Recommendation: create a Pricing Fundamentals webinar</div></div>
+      <div class="insight-card"><div class="ic-text"><strong>Agriculture businesses</strong> struggle with record keeping (sample)</div><div class="ic-rec">→ Recommendation: develop a financial record template</div></div>
+      <div class="insight-card"><div class="ic-text"><strong>Women-led businesses</strong> ask mostly about collateral (sample)</div><div class="ic-rec">→ Recommendation: review educational content on this topic</div></div>
+    </div>
+
+    <div class="memory-wrap">
+      <div class="section-title">Institutional Memory</div>
+      <div class="section-sub">A roadmap concept, not a current capability — this is what accumulates once the pilot runs.</div>
+      <p class="memory-text">Runnerbot 2 is not designed to remember individual entrepreneurs' private details beyond what a conversation needs. What it can accumulate, in aggregate and anonymised, is <strong>institutional learning</strong>: which regions ask about which topics, which sectors share which knowledge gaps, which programmes generate the most confusion. None of that exists yet \u2014 it is only real once real conversations happen. But it is the intended shape of the value over time: every week of the pilot, the aggregate picture BOI sees gets a little more complete, without any single entrepreneur's data being the product.</p>
+    </div>
+
+    <div class="section-title" style="margin-top:28px;">Weekly Pilot Report — Structure Preview</div>
+    <div class="section-sub">The report BOI receives each week during the pilot follows this structure. Values populate from real usage only.</div>
+    <div class="report-card">
+      <h4>Week [ ] — Pilot Report Template</h4>
+      <div class="report-row"><span class="rlabel">Conversations handled</span><span class="rval">pending pilot data</span></div>
+      <div class="report-row"><span class="rlabel">Most frequently asked questions</span><span class="rval">pending pilot data</span></div>
+      <div class="report-row"><span class="rlabel">Average response time</span><span class="rval">pending pilot data</span></div>
+      <div class="report-row"><span class="rlabel">Escalation rate</span><span class="rval">pending pilot data</span></div>
+      <div class="report-row"><span class="rlabel">Engagement trend vs. prior week</span><span class="rval">pending pilot data</span></div>
+      <div class="report-row"><span class="rlabel">Guidance / readiness completions</span><span class="rval">pending pilot data</span></div>
+      <div class="report-row"><span class="rlabel">Entrepreneur satisfaction</span><span class="rval">pending pilot data</span></div>
+      <div class="report-row"><span class="rlabel">Operational observations</span><span class="rval">pending pilot data</span></div>
+      <div class="report-row"><span class="rlabel">Staff / BDSP feedback</span><span class="rval">pending pilot data</span></div>
+    </div>
+  </div>
+  `;
+
+  function setView(v) {
+    document.querySelectorAll('.view-opt').forEach(el => el.classList.toggle('active', el.dataset.view === v));
+    document.getElementById('entrepreneurView').style.display = v === 'entrepreneur' ? 'block' : 'none';
+    document.getElementById('staffView').style.display = v === 'staff' ? 'block' : 'none';
+  }
+  </script>
+
+  <div class="rn-launcher-label" id="launcherLabel">👋 Ask Runnerbot 2 about funding</div>
+  <div class="rn-launcher" id="launcher" onclick="openPanel()">
+    <div class="pulse"></div>
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 18L2.5 21.5L6 20C7.5 20.7 9.2 21 11 21C16.5 21 21 17 21 12C21 7 16.5 3 11 3C5.5 3 1 7 1 12C1 14.3 1.9 16.4 3.4 18L4 18Z" fill="white" stroke="white" stroke-width="0.5"/>
+      <circle cx="7.5" cy="12" r="1.3" fill="#0A2A97"/><circle cx="11" cy="12" r="1.3" fill="#0A2A97"/><circle cx="14.5" cy="12" r="1.3" fill="#0A2A97"/>
+    </svg>
+  </div>
+
+  <div class="rn-panel" id="panel">
+    <div class="rn-head">
+      <div class="rn-head-row">
+        <div class="rn-head-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" fill="#0A2A97"/></svg></div>
+        <div class="rn-head-text">
+          <div class="name">Runnerbot 2 — Enterprise Intelligence Platform</div>
+          <div class="status"><span class="dot"></span>Guidance mode · human escalation always available</div>
+        </div>
+        <div class="rn-close" onclick="closePanel()">&times;</div>
+      </div>
+      <div class="rn-lang-row" id="langRow"></div>
+      <div class="lang-draft-badge" id="langDraftBadge">⚠ AI-drafted translation — pending native-speaker &amp; financial-terminology review before real deployment. Figures and programme names are kept exact.</div>
+      <div class="rn-plain-toggle">
+        <div class="rn-switch" id="plainSwitch" onclick="togglePlain()"><div class="knob"></div></div>
+        <span id="plainLabel">Plain Language mode (simpler words, shorter sentences)</span>
+      </div>
+    </div>
+    <div class="rn-disclosure" id="disclosureText">Runnerbot 2 provides guidance only. BOI officers make every funding decision.</div>
+    <div class="rn-body" id="chatBody"></div>
+    <div class="rn-options" id="chatOptions"></div>
+    <div class="rn-restart"><span onclick="restart()">Restart conversation</span></div>
+  </div>
+
+<script>
+// ============ ENGLISH (full, normal register) ============
+const en = {
+  start: { bot: ["Hi, I'm Runnerbot 2. I can help you find the right BOI programme and get funding-ready. What are you working on?"],
+    options: [ {label:"I want to start a food business", next:"food_start"}, {label:"Explore GLOW Programme", next:"glow_intro"}, {label:"Explore iDICE Programme", next:"idice_intro"}, {label:"Check Funding Readiness", next:"eligibility_start"}, {label:"See a Full Idea Analysis (sample)", next:"transform_result"} ] },
+  food_start: { bot: ["Great — a couple of quick questions so I can point you to the right programme. Is your business registered yet, and roughly how much funding are you thinking about?"],
+    options: [ {label:"Not registered yet, ~₦2–3M", next:"food_micro"}, {label:"Registered, ~₦20–50M, I'm a woman", next:"food_glow"}, {label:"Not sure yet", next:"food_unsure"} ] },
+  food_micro: { bot: ["At that stage and funding level, BOI's Micro Business Financing track is usually the right starting point — it's built for grassroots and early-stage entrepreneurs.", "Here's what \"funding-ready\" looks like for that track:"],
+    checklist: {title:"Funding-Readiness Checklist — Micro Business Financing", estWeeks:"2–4 weeks", stage:"Business Idea", items:[{text:"Business registration (CAC)"},{text:"Bank account in business name"},{text:"Basic financial records"},{text:"Simple business plan"},{text:"Valid means of ID"}]},
+    options: [ {label:"Help me with the business plan", next:"food_plan"}, {label:"What about GLOW instead?", next:"glow_intro"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  food_plan: { bot: ["For a food business, BOI reviewers typically want to see four things: your target customers, cost per item vs. selling price, how you'll manage cash flow for the first three months, and your registration/licensing status.", "Want to start with costs and pricing, or your customer description?"],
+    options: [ {label:"Start with costs and pricing", next:"food_costs"}, {label:"Start with customers", next:"food_customers"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  food_costs: { bot: ["Good place to start. Tell me roughly what it costs you to make one unit (ingredients, packaging), and what you plan to sell it for — I'll help you check the margin makes sense before it goes in your plan."],
+    options: [ {label:"(A real applicant would type numbers here)", next:"food_costs_demo"}, {label:"Back to the checklist", next:"food_micro"} ] },
+  food_costs_demo: { bot: ["In a live session, Runnerbot 2 would calculate the margin, flag if it's too thin for a sustainable business, and suggest what BOI reviewers usually expect to see written down — then fold it straight into the business plan draft."],
+    options: [ {label:"Back to the checklist", next:"food_micro"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  food_customers: { bot: ["Who's the food for — office workers on lunch break, families at home, event catering, something else? Even a rough answer helps BOI reviewers see you understand your own market."],
+    options: [ {label:"Back to the checklist", next:"food_micro"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  food_glow: { bot: ["GLOW is likely a strong fit — it's built for exactly this: women-owned and women-led businesses, loans up to ₦50 million at 7% interest over 5 years."],
+    options: [ {label:"What documents does GLOW need?", next:"glow_docs"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  food_unsure: { bot: ["No problem — that's exactly what I'm here for. Roughly, are you thinking small and just getting started, or do you already have a running business and want to grow it?"],
+    options: [ {label:"Just getting started, small", next:"food_micro"}, {label:"Already running, want to grow", next:"glow_intro"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  glow_intro: { bot: ["GLOW — Guaranteed Loans for Women — offers up to ₦50 million at 7% interest over a 5-year term, for women-owned and women-led businesses. Is this for you, or someone you're helping?"],
+    options: [ {label:"For me — what documents do I need?", next:"glow_docs"}, {label:"What's the eligibility exactly?", next:"glow_eligibility"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  glow_eligibility: { bot: ["Generally: the business should be at least majority women-owned or women-led, operating (or ready to operate) in an eligible sector, and able to show basic business records. A BOI Consultant can confirm your specific case in detail — want me to connect you?"],
+    options: [ {label:"Yes, connect me", next:"escalate"}, {label:"First, show me the document checklist", next:"glow_docs"} ] },
+  glow_docs: { bot: ["Typical documents: CAC registration, a business plan, recent financial records or projections, valid ID, and bank statements."],
+    checklist: {title:"Funding-Readiness Checklist — GLOW", estWeeks:"3–5 weeks", stage:"Registered Business, Seeking Growth Capital", items:[{text:"CAC business registration", done:true},{text:"Business plan"},{text:"Financial records / projections"},{text:"Valid means of ID"},{text:"Recent bank statements"}]},
+    options: [ {label:"Help me with the business plan", next:"food_plan"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  idice_intro: { bot: ["iDICE supports Nigerians aged 15–35 in digital and creative businesses — implemented by BOI with co-financing from the African Development Bank, AFD and the Islamic Development Bank. Early founders can access grants through Founders Lab; more established ventures can access debt financing to scale. Is that the sector you're in?"],
+    options: [ {label:"Yes — I'm an early-stage founder", next:"idice_early"}, {label:"I have a running tech/creative business", next:"idice_scale"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  idice_early: { bot: ["Founders Lab is likely your track — first-cohort grants have gone up to ₦10 million for idea-stage founders. Want the funding-readiness checklist for that track?"],
+    options: [ {label:"Yes, show me the checklist", next:"idice_checklist"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  idice_scale: { bot: ["For scaling tech/creative businesses, the BOI-iDICE and IsDB-iDICE Debt Funds are the relevant route. A BOI Consultant can walk you through the specific terms — want me to connect you?"],
+    options: [ {label:"Yes, connect me", next:"escalate"}, {label:"Show me the general checklist first", next:"idice_checklist"} ] },
+  idice_checklist: { bot: ["Here's a starting checklist:"],
+    checklist: {title:"Funding-Readiness Checklist — iDICE", estWeeks:"1–3 weeks", stage:"Early-Stage Founder", items:[{text:"Proof of age (15–35)"},{text:"Description of the digital/creative product"},{text:"Business registration (or plan to register)"},{text:"Basic pitch or business plan"}]},
+    options: [ {label:"Help me with the business plan", next:"food_plan"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  eligibility_start: { bot: ["Happy to help figure that out. Quick questions: what sector are you in, is your business registered yet, and roughly what funding size are you thinking about?"],
+    options: [ {label:"Food / retail, ~₦2–3M, not registered", next:"food_micro"}, {label:"Tech / creative, early-stage", next:"idice_early"}, {label:"Woman-owned, ~₦20–50M", next:"glow_intro"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  escalate: { bot: ["Of course — this is exactly the kind of case a BOI SME Consultant should look at directly. In a live deployment, this would open a scheduling request with your nearest available Consultant, along with a summary of what we've covered so nothing has to be repeated.", "Every complex case goes to a human. That's not a fallback — it's the design."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+  transform_result: { bot: ["Here's a sample of what a full idea analysis looks like — this example uses \"a small food delivery business for office workers,\" one of the scenarios earlier in this demo. In a live deployment this is generated from what an entrepreneur actually describes, not pre-written."],
+    transform: {
+      idea: "Small food delivery business for office workers in a dense commercial area",
+      sections: [
+        ["Executive Summary", "A home-based food business targeting office workers, needing roughly \u20a62\u20133M to formalise operations and prepare for BOI funding."],
+        ["Market", "Office workers want convenient, reliable lunch options; informal competitors exist, but consistency and hygiene are a real gap."],
+        ["Business Model", "Direct sales via phone/WhatsApp pre-orders, delivery within a defined radius."],
+        ["SWOT", "Strengths: existing product, built-in customer base. Weaknesses: no registration or financial records yet. Opportunities: repeat/subscription customers. Threats: informal competitors, ingredient cost volatility."],
+        ["Financial Risks", "No documented margin yet; no separation between personal and business finances."],
+        ["Enterprise Readiness Index\u2122", "20/100 \u2014 early stage. Matches the Micro Business Financing track."],
+        ["Improvement Plan", "Register with CAC, open a business bank account, track costs for 4 weeks, draft a one-page business plan."],
+        ["Action Plan", "This week: CAC registration. Weeks 2\u20133: bank account + cost tracking. Week 4: business plan draft."],
+        ["Learning Path", "Business Registration \u2192 Cash-Flow Fundamentals \u2192 Record Keeping."],
+        ["Recommended BOI Programme", "Micro Business Financing."],
+        ["Human Review Needed?", "Not yet \u2014 complete the 4-week preparation window first, then a BDSP review before applying."],
+      ],
+    },
+    options: [ {label:"Try the Micro Business track for real", next:"food_micro"}, {label:"Restart the demo", next:"start"} ] },
+};
+
+// ============ ENGLISH — PLAIN LANGUAGE MODE (entry points only) ============
+const en_plain = {
+  start: { bot: ["Hi. I am Runnerbot 2. I can help you find the right BOI programme. Tell me what you want to do."],
+    options: [ {label:"I want to start a food business", next:"food_start"}, {label:"Explore GLOW Programme", next:"glow_intro"}, {label:"Explore iDICE Programme", next:"idice_intro"}, {label:"Check Funding Readiness", next:"eligibility_start"} ] },
+  food_start: { bot: ["Good. I have two short questions.", "Have you registered your business? How much money do you need?"],
+    options: [ {label:"Not registered, ~₦2–3M", next:"food_micro"}, {label:"Registered, ~₦20–50M, I'm a woman", next:"food_glow"}, {label:"Not sure yet", next:"food_unsure"} ] },
+  glow_intro: { bot: ["GLOW gives loans to women. Up to ₦50 million. 7% interest. 5 years to pay back.", "Is this loan for you, or for someone else?"],
+    options: [ {label:"For me — what documents do I need?", next:"glow_docs"}, {label:"What's the eligibility exactly?", next:"glow_eligibility"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  idice_intro: { bot: ["iDICE helps young people (age 15 to 35) with digital or creative businesses.", "New founders can get a grant. Bigger businesses can get a loan.", "Is this your type of business?"],
+    options: [ {label:"Yes — I'm just starting", next:"idice_early"}, {label:"I have a running business", next:"idice_scale"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+  eligibility_start: { bot: ["I can help. Three short questions.", "What type of business? Is it registered? How much money do you need?"],
+    options: [ {label:"Food / retail, ~₦2–3M, not registered", next:"food_micro"}, {label:"Tech / creative, early-stage", next:"idice_early"}, {label:"Woman-owned, ~₦20–50M", next:"glow_intro"}, {label:"Connect me with a BOI Consultant", next:"escalate"} ] },
+};
+
+// ============ NIGERIAN PIDGIN (full) ============
+const pcm = {
+  start: { bot: ["How far! Na Runnerbot 2 be dis. I fit help you find the correct BOI program make you dey funding-ready. Wetin you dey work on?"],
+    options: [ {label:"I wan start food business", next:"food_start"}, {label:"Explore GLOW Programme", next:"glow_intro"}, {label:"Explore iDICE Programme", next:"idice_intro"}, {label:"Check Funding Readiness", next:"eligibility_start"}, {label:"Check Full Idea Analysis (sample)", next:"transform_result"} ] },
+  food_start: { bot: ["Correct — make I ask you two quick question so I go fit point you well. Your business don register? And how much money you dey find, roughly?"],
+    options: [ {label:"E never register, ~₦2–3M", next:"food_micro"}, {label:"E don register, ~₦20–50M, I be woman", next:"food_glow"}, {label:"I never sure", next:"food_unsure"} ] },
+  food_micro: { bot: ["For that level wey you dey and the money wey you dey find, BOI Micro Business Financing na the correct place make you start — dem build am for grassroots and early-stage business people.", "See wetin \"funding-ready\" mean for that track:"],
+    checklist: {title:"Funding-Readiness Checklist — Micro Business Financing", estWeeks:"2–4 weeks", stage:"Business Idea", items:[{text:"Business registration (CAC)"},{text:"Bank account for business name"},{text:"Basic financial record"},{text:"Simple business plan"},{text:"Valid ID"}]},
+    options: [ {label:"Help me with the business plan", next:"food_plan"}, {label:"Wetin about GLOW instead?", next:"glow_intro"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  food_plan: { bot: ["For food business, BOI people wey go review am dey usually wan see four things: who your customers be, how much e dey cost you per item versus how much you go sell am, how you go manage your money for the first three months, and if you don register/get license.", "You wan start with cost and price, or you wan start describe your customers?"],
+    options: [ {label:"Start with cost and price", next:"food_costs"}, {label:"Start with customers", next:"food_customers"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  food_costs: { bot: ["Good place to start. Tell me roughly how much e dey cost you make one unit (ingredients, packaging), and how much you wan sell am — I go help you check say the margin make sense before e enter your plan."],
+    options: [ {label:"(Real applicant go type their numbers here)", next:"food_costs_demo"}, {label:"Back to the checklist", next:"food_micro"} ] },
+  food_costs_demo: { bot: ["For real session, Runnerbot 2 go calculate the margin, tell you if e too small for the business to survive, and suggest wetin BOI reviewers dey normally expect make you write down — then put am straight inside your business plan draft."],
+    options: [ {label:"Back to the checklist", next:"food_micro"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  food_customers: { bot: ["Who you dey cook for — office workers wey dey chop for lunch break, families for house, event catering, or something else? Even rough answer go help BOI reviewers see say you understand your own market well."],
+    options: [ {label:"Back to the checklist", next:"food_micro"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  food_glow: { bot: ["GLOW fit match you well — na exactly for dis kain business dem build am: business wey woman own or woman dey lead, loan reach ₦50 million, 7% interest, for 5 years."],
+    options: [ {label:"Wetin documents GLOW need?", next:"glow_docs"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  food_unsure: { bot: ["No wahala — na exactly why I dey here. Roughly speaking, you dey think small and just dey start, or you don already get business wey dey run and you wan grow am?"],
+    options: [ {label:"Just dey start, small", next:"food_micro"}, {label:"E don dey run, I wan grow am", next:"glow_intro"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  glow_intro: { bot: ["GLOW — Guaranteed Loans for Women — dey offer up to ₦50 million, 7% interest, for 5 years, for business wey woman own or woman dey lead. Na for you be dis, or na person you dey help?"],
+    options: [ {label:"Na for me — wetin documents I need?", next:"glow_docs"}, {label:"Wetin be the eligibility exactly?", next:"glow_eligibility"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  glow_eligibility: { bot: ["Generally speaking: the business suppose dey majority woman-owned or woman-led, e dey operate (or ready to operate) for sector wey dem accept, and you fit show basic business record. BOI Consultant fit confirm your own case well well — you want make I connect you?"],
+    options: [ {label:"Yes, connect me", next:"escalate"}, {label:"First, show me the document checklist", next:"glow_docs"} ] },
+  glow_docs: { bot: ["Normal documents wey dem dey ask: CAC registration, business plan, recent financial records or projections, valid ID, and bank statement."],
+    checklist: {title:"Funding-Readiness Checklist — GLOW", estWeeks:"3–5 weeks", stage:"Registered Business, Seeking Growth Capital", items:[{text:"CAC business registration", done:true},{text:"Business plan"},{text:"Financial records / projections"},{text:"Valid ID"},{text:"Recent bank statement"}]},
+    options: [ {label:"Help me with the business plan", next:"food_plan"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  idice_intro: { bot: ["iDICE dey support Nigerians wey dey between 15 to 35 years for digital and creative business — BOI dey implement am, African Development Bank, AFD, and Islamic Development Bank dey co-finance am. If you be early founder, you fit access grant through Founders Lab; if your business don already established, you fit access debt financing make e grow. Na dat sector you dey?"],
+    options: [ {label:"Yes — I be early-stage founder", next:"idice_early"}, {label:"I get business wey dey run already", next:"idice_scale"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  idice_early: { bot: ["Founders Lab fit be your track — the first set wey dem do, grant reach ₦10 million for people wey still dey idea stage. You want make I show you the funding-readiness checklist for that track?"],
+    options: [ {label:"Yes, show me the checklist", next:"idice_checklist"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  idice_scale: { bot: ["For business wey wan scale for tech/creative sector, BOI-iDICE and IsDB-iDICE Debt Funds na the correct route. BOI Consultant fit waka you through the specific terms — you want make I connect you?"],
+    options: [ {label:"Yes, connect me", next:"escalate"}, {label:"First show me the general checklist", next:"idice_checklist"} ] },
+  idice_checklist: { bot: ["See starting checklist:"],
+    checklist: {title:"Funding-Readiness Checklist — iDICE", estWeeks:"1–3 weeks", stage:"Early-Stage Founder", items:[{text:"Proof of age (15–35)"},{text:"Wetin your digital/creative product be"},{text:"Business registration (or plan to register)"},{text:"Basic pitch or business plan"}]},
+    options: [ {label:"Help me with the business plan", next:"food_plan"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  eligibility_start: { bot: ["I go happy to help you sort am out. Quick questions: wetin sector you dey, your business don register, and roughly how much money you dey find?"],
+    options: [ {label:"Food / retail, ~₦2–3M, e never register", next:"food_micro"}, {label:"Tech / creative, early-stage", next:"idice_early"}, {label:"Woman-owned, ~₦20–50M", next:"glow_intro"}, {label:"Connect me to BOI Consultant", next:"escalate"} ] },
+  escalate: { bot: ["Of course — na exactly dis kain case make BOI SME Consultant go look directly. For real deployment, dis one go open scheduling request with the nearest Consultant wey dey available, plus summary of wetin we don discuss so you no go need repeat anything.", "Every complex case dey go meet human being. E no be say the system fail — na so we design am."],
+    options: [ {label:"Restart the demo", next:"start"} ] },
+  transform_result: { bot: ["Dis na sample of how full idea analysis go be — dis example use \"small food delivery business for office workers,\" one of the scenario wey dey inside dis demo before. For real deployment, dem go generate am from wetin entrepreneur actually describe, e no be pre-written."],
+    transform: {
+      idea: "Small food delivery business for office workers for busy commercial area",
+      sections: [
+        ["Executive Summary", "Small food business wey dey target office workers, wey need roughly \u20a62\u20133M to make e operations correct and prepare for BOI funding."],
+        ["Market", "Office workers want lunch wey convenient and reliable; informal competitors dey, but consistency and hygiene na real gap."],
+        ["Business Model", "Direct sales through phone/WhatsApp pre-order, delivery within specific area."],
+        ["SWOT", "Strengths: product don dey, customer base don dey. Weaknesses: no registration or financial record yet. Opportunities: repeat/subscription customers. Threats: informal competitors, ingredient cost wey dey change."],
+        ["Financial Risks", "No margin wey dem document yet; personal and business money never separate."],
+        ["Enterprise Readiness Index\u2122", "20/100 \u2014 early stage. E match Micro Business Financing track."],
+        ["Improvement Plan", "Register with CAC, open business bank account, track cost for 4 weeks, write one-page business plan."],
+        ["Action Plan", "Dis week: CAC registration. Week 2\u20133: bank account + cost tracking. Week 4: business plan draft."],
+        ["Learning Path", "Business Registration \u2192 Cash-Flow Fundamentals \u2192 Record Keeping."],
+        ["Recommended BOI Programme", "Micro Business Financing."],
+        ["Human Review Needed?", "Not yet \u2014 finish the 4-week preparation first, then BDSP go review am before you apply."],
+      ],
+    },
+    options: [ {label:"Try the Micro Business track for real", next:"food_micro"}, {label:"Restart the demo", next:"start"} ] },
+};
+
+// ============ YORUBA / HAUSA / IGBO — full trees, AI-drafted ============
+// Complete 18-node guidance content. All figures (₦50 million, 7%, 5 years, 15–35)
+// and proper nouns (GLOW, iDICE, CAC, BOI, BDSP) are kept literal in every language,
+// so the specific loan terms cannot be corrupted even where phrasing is imperfect.
+// This is a good-faith AI-generated draft, not native-speaker certified — the in-app
+// draft badge (langDraftActive) makes that status visible whenever these are active.
+const yo = {
+  start: { bot: ["Bawo, Emi ni Runnerbot 2. Mo le ran yin lowo lati ri eto BOI to ye fun yin, ati lati mura yin sile fun igbowo. Kini e n sise lori?"],
+    options: [ {label:"Mo fe bere ise onje", next:"food_start"}, {label:"Wo Eto GLOW", next:"glow_intro"}, {label:"Wo Eto iDICE", next:"idice_intro"}, {label:"Se Ayewo Imurasile Igbowo", next:"eligibility_start"}, {label:"Wo Onínọmbà Èrò Kíkún (àpẹẹrẹ)", next:"transform_result"} ] },
+  food_start: { bot: ["O dara — ibeere kekere meji ki n le fi yin han eto to ye. Se a ti forukọsilẹ ile-iṣẹ yin, ati elo ni owo ti e n wa?"],
+    options: [ {label:"A ko tii forukọsilẹ, ~₦2–3M", next:"food_micro"}, {label:"O ti forukọsilẹ, ~₦20–50M, Obinrin ni mi", next:"food_glow"}, {label:"Emi ko mo", next:"food_unsure"} ] },
+  food_micro: { bot: ["Ni ipele yi ati iye owo yi, Eto Igbowo Owo Kekere ti BOI (Micro Business Financing) ni ibi ti o ye ki e bere — a se e fun awon oniṣowo ipele-ibere.", "Wo ohun ti \"imurasile-igbowo\" tumo si fun eto yi:"],
+    checklist: {title:"Akojọ Imurasile-Igbowo — Micro Business Financing", estWeeks:"2–4 weeks", stage:"Business Idea", items:[{text:"Iforukọsilẹ ile-iṣẹ (CAC)"},{text:"Akanti banki ni orukọ ile-iṣẹ"},{text:"Akọsilẹ owo ipile"},{text:"Eto ile-iṣẹ o rọrun"},{text:"Iwe-eri idanimọ to wulo"}]},
+    options: [ {label:"Ran mi lowo pelu eto ile-iṣẹ", next:"food_plan"}, {label:"Kini nipa GLOW dipo?", next:"glow_intro"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  food_plan: { bot: ["Fun ise onje, awon oluyewo BOI maa n fe ri nkan merin: awon onibara yin, iye owo fun ohun kan la owo ti e o ta a, bi e se le se abojuto owo yin fun osu meta akoko, ati ipo forukọsilẹ/iwe-aṣẹ yin.", "Se ki a bere pelu iye owo ati idiyele, tabi apejuwe onibara yin?"],
+    options: [ {label:"Bere pelu iye owo ati idiyele", next:"food_costs"}, {label:"Bere pelu onibara", next:"food_customers"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  food_costs: { bot: ["Ibi to dara lati bere. So fun mi iye ti o n na yin lati se ohun kan (awon ohun elo, apoti), ati elo ti e gbero lati ta a — ma ran yin lowo lati ri boya ere na to fun eto yin."],
+    options: [ {label:"(Onibara gidi yoo ko awon nomba si ibi)", next:"food_costs_demo"}, {label:"Pada si akojọ", next:"food_micro"} ] },
+  food_costs_demo: { bot: ["Ninu ipade gidi, Runnerbot 2 yoo ka ere na, so boya o kere ju fun ile-iṣẹ alagbero, ati daba ohun ti awon oluyewo BOI maa n fe ri ti a ko sile — leyin naa fi si taara sinu eto ile-iṣẹ yin."],
+    options: [ {label:"Pada si akojọ", next:"food_micro"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  food_customers: { bot: ["Fun tani ni onje na — awon osise ọfiisi ni akoko isinmi, awon idile ni ile, isin igbeyawo, tabi omiran? Idahun eyikeyi yoo ran awon oluyewo BOI lowo lati ri pe e mo oja yin daadaa."],
+    options: [ {label:"Pada si akojọ", next:"food_micro"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  food_glow: { bot: ["GLOW le ba yin mu daradara — a se e gan-an fun eyi: ile-iṣẹ ti obinrin ni tabi ti obinrin dari, awin to ₦50 million ni 7% anfaani fun ọdun 5."],
+    options: [ {label:"Iwe wo ni GLOW nilo?", next:"glow_docs"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  food_unsure: { bot: ["Ko si isoro — eyi gan-an ni idi ti mo fi wa nibi. Se e n ronu kekere ati bibere, tabi e ti ni ile-iṣẹ ti n sise ti e fe mu dagba?"],
+    options: [ {label:"Bibere lo, kekere", next:"food_micro"}, {label:"O n sise, mo fe mu dagba", next:"glow_intro"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  glow_intro: { bot: ["GLOW — Awin Idaniloju fun Obinrin — nfun to ₦50 million ni 7% anfaani fun ọdun 5, fun ile-iṣẹ ti obinrin ni tabi ti obinrin dari. Ṣe eyi fun yin ni, tabi fun eniyan miran ti e n ran lowo?"],
+    options: [ {label:"Fun mi ni — iwe wo ni mo nilo?", next:"glow_docs"}, {label:"Kini gan-an ni ẹtọ?", next:"glow_eligibility"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  glow_eligibility: { bot: ["Ni gbogbogbo: ile-iṣẹ na gbọdọ jẹ ti obinrin ni opolopo tabi ti obinrin dari, ti n sise (tabi ti a mura lati sise) ni eka ti a gba, ati ni anfaani lati fi iwe ile-iṣẹ ipile han. Onimoran BOI le jẹrisi ọrọ pataki yin — se ki n so yin pọ?"],
+    options: [ {label:"Beeni, so mi po", next:"escalate"}, {label:"Kọkọ, fi akojọ iwe han mi", next:"glow_docs"} ] },
+  glow_docs: { bot: ["Awọn iwe ti a maa n beere: forukọsilẹ CAC, eto ile-iṣẹ, awọn iwe owo aipẹ tabi asọtẹlẹ, iwe-eri idanimọ, ati akọsilẹ banki."],
+    checklist: {title:"Akojọ Imurasile-Igbowo — GLOW", estWeeks:"3–5 weeks", stage:"Registered Business, Seeking Growth Capital", items:[{text:"Iforukọsilẹ CAC", done:true},{text:"Eto ile-iṣẹ"},{text:"Akọsilẹ owo / asọtẹlẹ"},{text:"Iwe-eri idanimọ to wulo"},{text:"Akọsilẹ banki aipẹ"}]},
+    options: [ {label:"Ran mi lowo pelu eto ile-iṣẹ", next:"food_plan"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  idice_intro: { bot: ["iDICE ran awon ọmọ Naijiria ti ọjọ-ori 15–35 lowo ninu ile-iṣẹ oni-nọmba ati eda — BOI ni n ṣe imuse, pelu igbowo-pin lati ọdọ African Development Bank, AFD ati Islamic Development Bank. Awon oludasile tuntun le ri onore nipasẹ Founders Lab; awon ile-iṣẹ ti o ti fidimule le ri igbowo-gbese lati dagba. Ṣe eka yi ni tiyin?"],
+    options: [ {label:"Beeni — oludasile ipele-ibere ni mi", next:"idice_early"}, {label:"Mo ni ile-iṣẹ oni-nọmba/eda ti n sise", next:"idice_scale"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  idice_early: { bot: ["Founders Lab le jẹ ọna yin — onore ẹgbẹ-akọkọ ti ga to ₦10 million fun awon oludasile ipele-imọran. Ṣe ki n fi akojọ imurasile-igbowo fun ọna yen han yin?"],
+    options: [ {label:"Beeni, fi akojọ han mi", next:"idice_checklist"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  idice_scale: { bot: ["Fun ile-iṣẹ oni-nọmba/eda ti n fẹ dagba, BOI-iDICE ati IsDB-iDICE Debt Funds ni ọna ti o ye. Onimoran BOI le fi ọrọ pataki han yin — se ki n so yin pọ?"],
+    options: [ {label:"Beeni, so mi po", next:"escalate"}, {label:"Kọkọ fi akojọ gbogbogbo han mi", next:"idice_checklist"} ] },
+  idice_checklist: { bot: ["Eyi ni akojọ ibere:"],
+    checklist: {title:"Akojọ Imurasile-Igbowo — iDICE", estWeeks:"1–3 weeks", stage:"Early-Stage Founder", items:[{text:"Eri ọjọ-ori (15–35)"},{text:"Apejuwe ọja oni-nọmba/eda"},{text:"Iforukọsilẹ ile-iṣẹ (tabi eto lati forukọsilẹ)"},{text:"Igbekalẹ tabi eto ile-iṣẹ ipile"}]},
+    options: [ {label:"Ran mi lowo pelu eto ile-iṣẹ", next:"food_plan"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  eligibility_start: { bot: ["Inu mi dun lati ran yin lowo. Ibeere kekere: eka wo ni e wa, ṣe ile-iṣẹ yin ti forukọsilẹ, ati elo ni iye owo ti e n ro?"],
+    options: [ {label:"Onje / tita, ~₦2–3M, ko tii forukọsilẹ", next:"food_micro"}, {label:"Oni-nọmba / eda, ipele-ibere", next:"idice_early"}, {label:"Ti obinrin ni, ~₦20–50M", next:"glow_intro"}, {label:"So mi po pelu Onimoran BOI", next:"escalate"} ] },
+  escalate: { bot: ["Dajudaju — eyi gan-an ni iru ọrọ ti Onimoran BOI SME gbọdọ wo taara. Ninu imuse gidi, eyi yoo ṣi ibeere fun eto ipade pẹlu Onimoran to sunmọ ti o wa, pẹlu akojọpọ ohun ti a ti sọrọ ki nnkan ma to un sọ lẹẹkansi.", "Gbogbo ọrọ pataki n lọ si eniyan. Kii ṣe pe eto naa kuna — bẹẹ ni a ṣe apẹrẹ rẹ."],
+    options: [ {label:"Bere demo lẹẹkansi", next:"start"} ] },
+  transform_result: { bot: ["Èyí ni àpẹẹrẹ ohun tí ìtúpalẹ̀ èrò kíkún dàbí — àpẹẹrẹ yìí lo \"ilé-iṣẹ́ oúnjẹ kékeré fún àwọn òṣìṣẹ́ ọ́fíìsì,\" ọ̀kan lára àwọn ipò tí ó ti wà nínú àfihàn yìí ṣáájú. Nínú ìlò gidi, a óò ṣe é láti inú ohun tí oníṣòwò ń ṣàpèjúwe gan-an, kì í ṣe ìkọ̀wé tẹ́lẹ̀."],
+    transform: {
+      idea: "Ilé-iṣẹ́ oúnjẹ kékeré fún àwọn òṣìṣẹ́ ọ́fíìsì ní agbègbè òwò tí ó pọ̀",
+      sections: [
+        ["Executive Summary", "Ilé-iṣẹ́ oúnjẹ ilé kan tí ó fojú sí àwọn òṣìṣẹ́ ọ́fíìsì, tí ó nílò bí \u20a62\u20133M láti mú iṣẹ́ ṣiṣẹ́ dání kí ó sì múra sílẹ̀ fún owó BOI."],
+        ["Market", "Àwọn òṣìṣẹ́ ọ́fíìsì fẹ́ oúnjẹ ọ̀sán tí ó rọrùn tí ó sì dájú; àwọn agbógunti aláìṣẹ̀gbọ́n wà, ṣùgbọ́n ìdúróṣinṣin àti mímọ́ jẹ́ àlàfo gidi."],
+        ["Business Model", "Títà tààrà nípasẹ̀ fóònù/WhatsApp, fífi ránṣẹ́ láàrin agbègbè kan pàtó."],
+        ["SWOT", "Agbára: ọjà ti wà, onibara ti wà. Àìlera: kò tíì forukọsilẹ tàbí ní àkọsilẹ owo. Àǹfààní: onibara loorekoore. Ewu: agbógunti aláìṣẹ̀gbọ́n, iye owo ohun elo tí ó ń yàtọ̀."],
+        ["Financial Risks", "Kò sí èrè tí a kọ sílẹ̀ síi; owó ara ẹni àti owó ilé-iṣẹ́ kò tíì yàtọ̀."],
+        ["Enterprise Readiness Index\u2122", "20/100 \u2014 ìpele ìbẹ̀rẹ̀. Ó bá ọ̀nà Micro Business Financing mu."],
+        ["Improvement Plan", "Forukọsilẹ pẹlu CAC, ṣí àkántì banki ilé-iṣẹ́, tọpinpin iye owo fún ọ̀sẹ̀ 4, kọ eto ile-iṣẹ oju-iwe kan."],
+        ["Action Plan", "Ọ̀sẹ̀ yìí: forukọsilẹ CAC. Ọ̀sẹ̀ 2\u20133: àkántì banki + títọpinpin iye owo. Ọ̀sẹ̀ 4: kikọ eto ile-iṣẹ."],
+        ["Learning Path", "Iforukọsilẹ Ile-iṣẹ \u2192 Ìpìlẹ̀ Owó Sísàn \u2192 Ìpamọ́ Àkọsílẹ̀."],
+        ["Recommended BOI Programme", "Micro Business Financing."],
+        ["Human Review Needed?", "Kò tíì \u2014 parí àkókò ìmúrasílẹ̀ ọ̀sẹ̀ 4 kọ́kọ́, lẹ́yìn náà kí Onimoran BDSP ṣe àyẹ̀wò kí o tó fi ẹ̀bẹ̀ sílẹ̀."],
+      ],
+    },
+    options: [ {label:"Gbiyanju Micro Business track fun gidi", next:"food_micro"}, {label:"Bere demo lẹẹkansi", next:"start"} ] },
+};
+
+const ha = {
+  start: { bot: ["Sannu, Ni ne Runnerbot 2. Zan iya taimaka maka nemo shirin BOI da ya dace da kai, in kuma shirya ka don samun kudi. Me kake aiki a kai?"],
+    options: [ {label:"Ina son fara kasuwancin abinci", next:"food_start"}, {label:"Bincika Shirin GLOW", next:"glow_intro"}, {label:"Bincika Shirin iDICE", next:"idice_intro"}, {label:"Duba Shirye-shiryen Kudi", next:"eligibility_start"}, {label:"Duba Cikakken Bincike na Ra'ayi (misali)", next:"transform_result"} ] },
+  food_start: { bot: ["Madalla — ina da tambayoyi biyu kadan don in nuna maka shirin da ya dace. Shin an yi wa kasuwancinka rijista, kuma nawa ne kudin da kake nema?"],
+    options: [ {label:"Ba a yi rijista ba tukuna, ~₦2–3M", next:"food_micro"}, {label:"An yi rijista, ~₦20–50M, Ni mace ce", next:"food_glow"}, {label:"Ban tabbata ba tukuna", next:"food_unsure"} ] },
+  food_micro: { bot: ["A wannan matakin da adadin kudin, shirin BOI na Micro Business Financing shine wurin da ya dace ka fara — an gina shi don masu kasuwanci na matakin farko.", "Ga abin da \"shirye don kudi\" yake nufi ga wannan shiri:"],
+    checklist: {title:"Jerin Shirye-shiryen Kudi — Micro Business Financing", estWeeks:"2–4 weeks", stage:"Business Idea", items:[{text:"Rijistar kasuwanci (CAC)"},{text:"Asusun banki a sunan kasuwanci"},{text:"Bayanan kudi na asali"},{text:"Sauƙin shirin kasuwanci"},{text:"ID mai inganci"}]},
+    options: [ {label:"Taimaka min da shirin kasuwanci", next:"food_plan"}, {label:"Me game da GLOW maimakon?", next:"glow_intro"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  food_plan: { bot: ["Don kasuwancin abinci, masu duba BOI galibi suna son ganin abubuwa hudu: wadanda kake nufi da su, farashin kaya daya da kudin da za ka sayar, yadda za ka gudanar da kudi na farkon watanni uku, da matsayin rijista/lasisin ka.", "Kana son fara da farashi da kudi, ko bayanin abokan cinikin ka?"],
+    options: [ {label:"Fara da farashi da kudi", next:"food_costs"}, {label:"Fara da abokan ciniki", next:"food_customers"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  food_costs: { bot: ["Wuri mai kyau don farawa. Gaya mini kimanin nawa ne yake kashe ka don yin kaya daya (kayan aiki, marufi), da nawa kake shirin sayarwa — zan taimaka ka duba idan ribar ta yi ma'ana kafin ta shiga cikin shirinka."],
+    options: [ {label:"(Ainihin mai nema zai rubuta lambobi anan)", next:"food_costs_demo"}, {label:"Koma zuwa jerin", next:"food_micro"} ] },
+  food_costs_demo: { bot: ["A zaman ainihi, Runnerbot 2 zai lissafta riba, ya nuna idan ta yi kadan sosai don kasuwanci mai dorewa, kuma ya bayar da shawarar abin da masu duba BOI galibi suke sa ran gani a rubuce — sannan ya sanya shi kai tsaye cikin daftarin shirin kasuwanci."],
+    options: [ {label:"Koma zuwa jerin", next:"food_micro"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  food_customers: { bot: ["Wa kake dafa abinci dominsu — ma'aikatan ofis a lokacin hutun cin abinci, iyalai a gida, bikin biki, ko wani abu daban? Ko da amsa kadan zai taimaka wa masu duba BOI su ga cewa ka fahimci kasuwarka."],
+    options: [ {label:"Koma zuwa jerin", next:"food_micro"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  food_glow: { bot: ["GLOW na iya dacewa da kai sosai — an gina shi ainihi don wannan: kasuwancin da mata suke da shi ko suke jagoranta, rance har zuwa Naira miliyan 50 a kashi 7 na riba a cikin shekaru 5."],
+    options: [ {label:"Wadanne takardu GLOW ke bukata?", next:"glow_docs"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  food_unsure: { bot: ["Babu matsala — wannan shine ainihin dalilin da na ke nan. Kimanin, kana tunanin karami kuma kawai fara, ko kana da kasuwanci mai gudana da kake son girma?"],
+    options: [ {label:"Kawai fara, karami", next:"food_micro"}, {label:"Yana gudana, ina son girma", next:"glow_intro"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  glow_intro: { bot: ["GLOW — Guaranteed Loans for Women — na bayar da har zuwa Naira miliyan 50 a kashi 7 na riba a cikin shekaru 5, don kasuwancin da mata suke da shi ko suke jagoranta. Wannan naka ne, ko na wani da kake taimakawa?"],
+    options: [ {label:"Nawa ne — wadanne takardu nake bukata?", next:"glow_docs"}, {label:"Menene sharuddan ainihi?", next:"glow_eligibility"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  glow_eligibility: { bot: ["Gabaɗaya: kasuwancin ya kamata ya kasance galibi na mata ne ko mata ke jagoranta, yana aiki (ko shirye ya yi aiki) a fannin da aka yarda da shi, kuma yana iya nuna bayanan kasuwanci na asali. Mai Ba da Shawara na BOI zai iya tabbatar da lamarinka daki-daki — kana so in hada ku?"],
+    options: [ {label:"Ee, hada ni", next:"escalate"}, {label:"Da farko, nuna min jerin takardu", next:"glow_docs"} ] },
+  glow_docs: { bot: ["Takardun da ake bukata galibi: rijistar CAC, shirin kasuwanci, bayanan kudi na kwanan nan ko hasashe, ID mai inganci, da bayanan banki."],
+    checklist: {title:"Jerin Shirye-shiryen Kudi — GLOW", estWeeks:"3–5 weeks", stage:"Registered Business, Seeking Growth Capital", items:[{text:"Rijistar kasuwanci ta CAC", done:true},{text:"Shirin kasuwanci"},{text:"Bayanan kudi / hasashe"},{text:"ID mai inganci"},{text:"Bayanan banki na kwanan nan"}]},
+    options: [ {label:"Taimaka min da shirin kasuwanci", next:"food_plan"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  idice_intro: { bot: ["iDICE na taimaka wa 'yan Najeriya masu shekaru 15–35 a kasuwancin dijital da fasaha — BOI ne ke aiwatarwa, tare da hadin gwiwar kudi daga African Development Bank, AFD da Islamic Development Bank. Sabbin wadanda suka kirkiro za su iya samun tallafi ta hanyar Founders Lab; kasuwancin da suka riga sun kafu za su iya samun bashi don girma. Wannan fannin naka ne?"],
+    options: [ {label:"Ee — ni mai kirkiro ne na matakin farko", next:"idice_early"}, {label:"Ina da kasuwancin dijital/fasaha mai gudana", next:"idice_scale"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  idice_early: { bot: ["Founders Lab na iya zama hanyarka — tallafin kungiya ta farko ya kai Naira miliyan 10 don wadanda suke matakin ra'ayi. Kana son in nuna maka jerin abubuwan shirye don kudi na wannan hanya?"],
+    options: [ {label:"Ee, nuna min jerin", next:"idice_checklist"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  idice_scale: { bot: ["Don kasuwancin dijital/fasaha da ke son girma, BOI-iDICE da IsDB-iDICE Debt Funds su ne hanyar da ta dace. Mai Ba da Shawara na BOI zai iya bayyana maka sharuddan — kana so in hada ku?"],
+    options: [ {label:"Ee, hada ni", next:"escalate"}, {label:"Da farko nuna min jerin gaba daya", next:"idice_checklist"} ] },
+  idice_checklist: { bot: ["Ga jerin farawa:"],
+    checklist: {title:"Jerin Shirye-shiryen Kudi — iDICE", estWeeks:"1–3 weeks", stage:"Early-Stage Founder", items:[{text:"Tabbacin shekaru (15–35)"},{text:"Bayanin kayan dijital/fasaha"},{text:"Rijistar kasuwanci (ko shirin yin rijista)"},{text:"Sauƙin gabatarwa ko shirin kasuwanci"}]},
+    options: [ {label:"Taimaka min da shirin kasuwanci", next:"food_plan"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  eligibility_start: { bot: ["Ina murna in taimaka gano hakan. Tambayoyi kadan: wane fanni kake ciki, shin an yi wa kasuwancinka rijista, kuma kimanin nawa ne kudin da kake tunani?"],
+    options: [ {label:"Abinci / siyarwa, ~₦2–3M, ba a yi rijista ba", next:"food_micro"}, {label:"Dijital / fasaha, matakin farko", next:"idice_early"}, {label:"Mallakin mata, ~₦20–50M", next:"glow_intro"}, {label:"Hada ni da Mai Ba da Shawara na BOI", next:"escalate"} ] },
+  escalate: { bot: ["Tabbas — wannan shine ainihin irin lamarin da Mai Ba da Shawara na BOI SME ya kamata ya duba kai tsaye. A ainihin turawa, wannan zai bude bukatar tsara lokaci tare da Mai Ba da Shawara mafi kusa da ke akwai, tare da takaitaccen abin da muka tattauna don kada a maimaita kome.", "Kowane lamari mai wahala yana zuwa ga mutum. Ba gazawa ba ce — haka aka tsara shi."],
+    options: [ {label:"Sake farawa demo", next:"start"} ] },
+  transform_result: { bot: ["Ga misalin yadda cikakken bincike na ra'ayi yake kama — wannan misalin yana amfani da \"karamin kasuwancin isar da abinci ga ma'aikatan ofis,\" daya daga cikin yanayin da aka riga aka ambata a wannan demo. A ainihin turawa, ana samar da wannan daga abin da mai kasuwanci ya bayyana ainihi, ba a rubuta shi tukuna ba."],
+    transform: {
+      idea: "Karamin kasuwancin isar da abinci ga ma'aikatan ofis a yankin kasuwanci mai cunkoso",
+      sections: [
+        ["Executive Summary", "Karamin kasuwancin abinci wanda ke niyya ma'aikatan ofis, wanda ke bukatar kimanin Naira miliyan 2-3 don daidaita ayyuka da shirya don kudin BOI."],
+        ["Market", "Ma'aikatan ofis suna son abincin rana mai dacewa da dogaro; akwai fafatawa daga masu sayarwa marasa tsari, amma daidaito da tsafta babban gibi ne."],
+        ["Business Model", "Sayarwa kai tsaye ta wayar tarho/WhatsApp, kawo kaya a cikin wani yanki da aka ayyana."],
+        ["SWOT", "Karfi: akwai kaya, akwai abokan ciniki. Rauni: ba a yi rijista ba tukuna ko bayanan kudi. Dama: abokan ciniki masu maimaitawa. Barazana: masu fafatawa marasa tsari, canjin farashin kayan aiki."],
+        ["Financial Risks", "Babu riba da aka rubuta tukuna; ba a raba kudin kai da na kasuwanci ba tukuna."],
+        ["Enterprise Readiness Index\u2122", "20/100 \u2014 matakin farko. Ya dace da hanyar Micro Business Financing."],
+        ["Improvement Plan", "Yi rijista da CAC, bude asusun banki na kasuwanci, bibiyar kudade na makonni 4, rubuta shirin kasuwanci na shafi daya."],
+        ["Action Plan", "Wannan makon: rijistar CAC. Makonni 2-3: asusun banki + bibiyar kudade. Mako na 4: daftarin shirin kasuwanci."],
+        ["Learning Path", "Rijistar Kasuwanci \u2192 Tushen Kudin Shiga da Fita \u2192 Ajiye Bayanai."],
+        ["Recommended BOI Programme", "Micro Business Financing."],
+        ["Human Review Needed?", "Ba tukuna ba \u2014 kammala makonni 4 na shiri tukuna, sannan Mai Ba da Shawara na BDSP ya duba kafin nema."],
+      ],
+    },
+    options: [ {label:"Gwada Micro Business track na gaske", next:"food_micro"}, {label:"Sake farawa demo", next:"start"} ] },
+};
+
+const ig = {
+  start: { bot: ["Ndewo, Abụ m Runnerbot 2. Enwere m ike inyere gị aka ịchọta mmemme BOI kwesịrị gị, ma kwadebe gị maka ego. Gịnị ka ị na-arụ ọrụ na ya?"],
+    options: [ {label:"Achọrọ m ịmalite azụmahịa nri", next:"food_start"}, {label:"Nyocha Mmemme GLOW", next:"glow_intro"}, {label:"Nyocha Mmemme iDICE", next:"idice_intro"}, {label:"Lelee Njikere Ego", next:"eligibility_start"}, {label:"Lelee Nyocha Echiche Zuru Oke (ihe atụ)", next:"transform_result"} ] },
+  food_start: { bot: ["Ọ dị mma — enwere m ajụjụ ole na ole ka m nwee ike ịchọpụta mmemme kwesịrị. Ị debanyeela azụmahịa gị aha, ma ego ole ka ị na-achọ?"],
+    options: [ {label:"Edebeghị aha, ~₦2–3M", next:"food_micro"}, {label:"Edebanyela aha, ~₦20–50M, Abụ m nwanyị", next:"food_glow"}, {label:"Amaghị m ka ọ dị", next:"food_unsure"} ] },
+  food_micro: { bot: ["N'ọkwa a na ego a, mmemme Micro Business Financing nke BOI bụ ebe kwesịrị ịmalite — e wuru ya maka ndị ọzụzụ azụmahịa mbido.", "Lee ihe \"njikere ego\" pụtara maka ụzọ ahụ:"],
+    checklist: {title:"Ndepụta Njikere Ego — Micro Business Financing", estWeeks:"2–4 weeks", stage:"Business Idea", items:[{text:"Ndebanye aha azụmahịa (CAC)"},{text:"Akaụntụ ụlọ akụ n'aha azụmahịa"},{text:"Akwụkwọ ego bụ isi"},{text:"Atụmatụ azụmahịa dị mfe"},{text:"ID bara uru"}]},
+    options: [ {label:"Nyere m aka na atụmatụ azụmahịa", next:"food_plan"}, {label:"Gịnị banyere GLOW kama?", next:"glow_intro"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  food_plan: { bot: ["Maka azụmahịa nri, ndị nyocha BOI na-achọkarị ịhụ ihe anọ: ndị ahịa gị, ọnụ ahịa otu ihe vs ọnụ ahịa ị ga-ere ya, otu ị ga-esi jikwaa ego gị maka ọnwa atọ mbụ, na ọnọdụ ndebanye aha/akwụkwọ ikike gị.", "Ị chọrọ ịmalite na ọnụ ahịa na mmefu, ka ọ bụ nkọwa ndị ahịa gị?"],
+    options: [ {label:"Malite na ọnụ ahịa na mmefu", next:"food_costs"}, {label:"Malite na ndị ahịa", next:"food_customers"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  food_costs: { bot: ["Ebe dị mma ịmalite. Gwa m ego ole ọ na-efu gị iji mepụta otu ihe (ihe eji eme ya, akpa), na ego ole ị na-eme atụmatụ ire ya — m ga-enyere gị aka ịlele ma uru ahụ ọ dabara adaba tupu ọ banye n'atụmatụ gị."],
+    options: [ {label:"(Onye na-arịọ n'ezie ga-edetu nọmba ebe a)", next:"food_costs_demo"}, {label:"Laghachi na ndepụta", next:"food_micro"} ] },
+  food_costs_demo: { bot: ["Na oge dị adị, Runnerbot 2 ga-agụ uru ahụ, gosi ma ọ dị obere maka azụmahịa nwere ike ịdị adịgide, ma tụọ aro ihe ndị nyocha BOI na-atụkarị anya ịhụ ede ede — mgbe ahụ tinye ya ozugbo n'ime akwụkwọ atụmatụ azụmahịa."],
+    options: [ {label:"Laghachi na ndepụta", next:"food_micro"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  food_customers: { bot: ["Ọ bụ onye ka ị na-esiere nri — ndị ọrụ ụlọ ọrụ n'oge ezumike nri, ezinụlọ n'ụlọ, ọrụ oriri, ka ọ bụ ihe ọzọ? Ọbụlagodi azịza dị nro ga-enyere ndị nyocha BOI aka ịhụ na ị ghọtara ahịa gị."],
+    options: [ {label:"Laghachi na ndepụta", next:"food_micro"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  food_glow: { bot: ["GLOW nwere ike ịdaba nke ọma — e wuru ya kpọmkwem maka nke a: azụmahịa ụmụ nwanyị nwere ma ọ bụ ndị ụmụ nwanyị na-edu, mgbazinye ego ruo Naira nde 50 na ọnụego 7% n'afọ 5."],
+    options: [ {label:"Gịnị akwụkwọ ka GLOW chọrọ?", next:"glow_docs"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  food_unsure: { bot: ["Nsogbu adịghị — nke a kpọmkwem bụ ihe kpatara m ji nọrọ ebe a. N'ihe fọrọ nke nta, ị na-eche obere ma na-amalite, ka ị nweelarị azụmahịa na-agba ọsọ nke ị chọrọ ka o too?"],
+    options: [ {label:"Naamalite, obere", next:"food_micro"}, {label:"Na-agba ọsọ, achọrọ m ka o too", next:"glow_intro"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  glow_intro: { bot: ["GLOW — Guaranteed Loans for Women — na-enye ruo Naira nde 50 na ọnụego 7% n'afọ 5, maka azụmahịa ụmụ nwanyị nwere ma ọ bụ ndị ụmụ nwanyị na-edu. Nke a bụ maka gị, ka ọ bụ onye ọzọ ị na-enyere aka?"],
+    options: [ {label:"Ọ bụ maka m — gịnị akwụkwọ ka m chọrọ?", next:"glow_docs"}, {label:"Gịnị bụ mmadaba kpọmkwem?", next:"glow_eligibility"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  glow_eligibility: { bot: ["N'ozuzu: azụmahịa ahụ kwesịrị ịbụ nke ụmụ nwanyị nwere ma ọ bụ ndị ụmụ nwanyị na-edu, na-arụ ọrụ (ma ọ bụ dị njikere ịrụ ọrụ) n'ngalaba a nabatara, ma nwee ike igosi akwụkwọ azụmahịa bụ isi. Onye Ndụmọdụ BOI nwere ike ikwenye okwu gị kpọmkwem — ị chọrọ ka m jikọta gị?"],
+    options: [ {label:"Ee, jikọta m", next:"escalate"}, {label:"Buru ụzọ gosi m ndepụta akwụkwọ", next:"glow_docs"} ] },
+  glow_docs: { bot: ["Akwụkwọ a na-achọkarị: ndebanye aha CAC, atụmatụ azụmahịa, akwụkwọ ego ọhụrụ ma ọ bụ atụmatụ, ID bara uru, na nkọwa ụlọ akụ."],
+    checklist: {title:"Ndepụta Njikere Ego — GLOW", estWeeks:"3–5 weeks", stage:"Registered Business, Seeking Growth Capital", items:[{text:"Ndebanye aha CAC", done:true},{text:"Atụmatụ azụmahịa"},{text:"Akwụkwọ ego / atụmatụ"},{text:"ID bara uru"},{text:"Nkọwa ụlọ akụ ọhụrụ"}]},
+    options: [ {label:"Nyere m aka na atụmatụ azụmahịa", next:"food_plan"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  idice_intro: { bot: ["iDICE na-akwado ụmụ Nigeria dị afọ 15–35 n'azụmahịa dijitalụ na nke okike — BOI na-emezi ya, yana ndị na-enyere aka n'ego bụ African Development Bank, AFD na Islamic Development Bank. Ndị ntọala ọhụrụ nwere ike ịnweta onyinye site na Founders Lab; azụmahịa ndị guzosiri ike nwere ike ịnweta ego mba iji too. Ọ bụ ngalaba a ka ị nọ?"],
+    options: [ {label:"Ee — abụ m ntọala ọkwa mbụ", next:"idice_early"}, {label:"Enwere m azụmahịa dijitalụ/nke okike na-agba ọsọ", next:"idice_scale"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  idice_early: { bot: ["Founders Lab nwere ike ịbụ ụzọ gị — onyinye ìgwè mbụ eruola Naira nde 10 maka ndị ntọala nọ n'ọkwa echiche. Ị chọrọ ka m gosi gị ndepụta njikere ego maka ụzọ ahụ?"],
+    options: [ {label:"Ee, gosi m ndepụta ahụ", next:"idice_checklist"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  idice_scale: { bot: ["Maka azụmahịa dijitalụ/nke okike na-achọ ito, BOI-iDICE na IsDB-iDICE Debt Funds bụ ụzọ kwesịrị. Onye Ndụmọdụ BOI nwere ike ịkọwara gị usoro ndị ahụ kpọmkwem — ị chọrọ ka m jikọta gị?"],
+    options: [ {label:"Ee, jikọta m", next:"escalate"}, {label:"Buru ụzọ gosi m ndepụta izugbe", next:"idice_checklist"} ] },
+  idice_checklist: { bot: ["Lee ndepụta mbido:"],
+    checklist: {title:"Ndepụta Njikere Ego — iDICE", estWeeks:"1–3 weeks", stage:"Early-Stage Founder", items:[{text:"Akaebe afọ (15–35)"},{text:"Nkọwa ngwaahịa dijitalụ/nke okike"},{text:"Ndebanye aha azụmahịa (ma ọ bụ atụmatụ idebanye aha)"},{text:"Ngosi mfe ma ọ bụ atụmatụ azụmahịa bụ isi"}]},
+    options: [ {label:"Nyere m aka na atụmatụ azụmahịa", next:"food_plan"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  eligibility_start: { bot: ["Obi ụtọ na-enyere m aka ịchọpụta nke ahụ. Ajụjụ ole na ole: kedu ngalaba ị nọ, ị debanyeela azụmahịa gị aha, ma ego ole ka ị na-eche?"],
+    options: [ {label:"Nri / ire ahịa, ~₦2–3M, edebeghị aha", next:"food_micro"}, {label:"Dijitalụ / nke okike, ọkwa mbụ", next:"idice_early"}, {label:"Nke ụmụ nwanyị nwere, ~₦20–50M", next:"glow_intro"}, {label:"Jikọta m na Onye Ndụmọdụ BOI", next:"escalate"} ] },
+  escalate: { bot: ["N'ezie — nke a kpọmkwem bụ ụdị okwu Onye Ndụmọdụ BOI SME kwesịrị ile anya ozugbo. Na ntinye ọrụ dị adị, nke a ga-emeghe arịrịọ ntoala oge na Onye Ndụmọdụ dịkarịsịrị nso dị, yana nchịkọta ihe anyị kwuru ka ọ ghara ịdị mkpa ikwughachi ihe ọ bụla.", "Okwu ọ bụla siri ike na-aga n'aka mmadụ. Ọ bụghị ọdịda — otú ahụ ka e mere ya."],
+    options: [ {label:"Malitegharịa demo", next:"start"} ] },
+  transform_result: { bot: ["Lee ihe atụ ihe nyocha echiche zuru oke ga-adị ka \u2014 ihe atụ a ji \"obere azụmahịa nzipu nri maka ndị ọrụ ụlọ ọrụ,\" otu n'ime ọnọdụ ndị e kwuru na demo a na mbụ. Na ntinye ọrụ dị adị, a ga-emepụta nke a site na ihe onye ọchụnta ego kọwara n'ezie, ọ bụghị ihe edeburu ede."],
+    transform: {
+      idea: "Obere azụmahịa nzipu nri maka ndị ọrụ ụlọ ọrụ na mpaghara azụmahịa dị arọ",
+      sections: [
+        ["Executive Summary", "Obere azụmahịa nri ụlọ na-elekwasị anya na ndị ọrụ ụlọ ọrụ, chọrọ ihe dị ka Naira nde 2-3 iji mee ka ọrụ ya guzozie ma kwadebe maka ego BOI."],
+        ["Market", "Ndị ọrụ ụlọ ọrụ chọrọ nri ehihie dabara adaba ma dabere; ndị asọmpi na-akọghị akọ dị, mana n'ụzọ kwụ ọtọ na ọcha bụ ohere n'ezie."],
+        ["Business Model", "Ire ahịa ozugbo site na ekwentị/WhatsApp, nnyefe n'ime otu mpaghara akọwapụtara."],
+        ["SWOT", "Ike: enwere ngwaahịa, enwere ndị ahịa. Adịghị ike: edebeghị aha ma ọ bụ akwụkwọ ego. Ohere: ndị ahịa na-emeghachi. Ihe egwu: ndị asọmpi na-akọghị akọ, mgbanwe ọnụ ahịa ngwaahịa."],
+        ["Financial Risks", "Enweghị uru edebanyere aha; ekewapụbeghị ego onwe na nke azụmahịa."],
+        ["Enterprise Readiness Index\u2122", "20/100 \u2014 ọkwa mbụ. Ọ dabara na ụzọ Micro Business Financing."],
+        ["Improvement Plan", "Debanye aha na CAC, mepee akaụntụ ụlọ akụ azụmahịa, soro ego ụka izu 4, dee atụmatụ azụmahịa otu peeji."],
+        ["Action Plan", "Izu a: ndebanye aha CAC. Izu nke 2-3: akaụntụ ụlọ akụ + nsochi ego. Izu nke 4: mmemme atụmatụ azụmahịa."],
+        ["Learning Path", "Ndebanye Aha Azụmahịa \u2192 Ntọala Ego \u2192 Nchekwa Akwụkwọ."],
+        ["Recommended BOI Programme", "Micro Business Financing."],
+        ["Human Review Needed?", "Ọ bụghị ugbu a \u2014 mechaa oge nkwadebe izu 4 mbụ, mgbe ahụ ka Onye Ndụmọdụ BDSP nyocha tupu ị arịọ."],
+      ],
+    },
+    options: [ {label:"Nwaa Micro Business track n'ezie", next:"food_micro"}, {label:"Malitegharịa demo", next:"start"} ] },
+};
+
+const content = { en, pcm, yo, ha, ig };
+const langLabels = { en: "English", pcm: "Pidgin", yo: "Yorùbá", ha: "Hausa", ig: "Igbo" };
+
+let currentLang = "en";
+let plainMode = false;
+const body = document.getElementById("chatBody");
+const optionsEl = document.getElementById("chatOptions");
+
+function getNode(id) {
+  if (plainMode && currentLang === "en" && en_plain[id]) return en_plain[id];
+  if (content[currentLang] && content[currentLang][id]) return content[currentLang][id];
+  return en[id]; // graceful fallback so nothing ever breaks
+}
+
+function buildLangRow() {
+  const row = document.getElementById("langRow");
+  row.innerHTML = "";
+  Object.keys(langLabels).forEach(code => {
+    const b = document.createElement("div");
+    b.className = "rn-lang-btn" + (code === currentLang ? " active" : "");
+    b.textContent = langLabels[code];
+    b.onclick = () => { currentLang = code; if (code !== "en") { plainMode = false; updatePlainUI(); } buildLangRow(); restart(); };
+    row.appendChild(b);
+  });
+  document.getElementById("langDraftBadge").classList.toggle("show", ["yo","ha","ig"].includes(currentLang));
+}
+function updatePlainUI() {
+  const sw = document.getElementById("plainSwitch");
+  sw.classList.toggle("on", plainMode);
+  sw.classList.toggle("disabled", currentLang !== "en");
+}
+function togglePlain() {
+  if (currentLang !== "en") return;
+  plainMode = !plainMode;
+  updatePlainUI();
+  restart();
+}
+
+function openPanel() {
+  document.getElementById("panel").classList.add("open");
+  document.getElementById("launcher").style.display = "none";
+  document.getElementById("launcherLabel").style.display = "none";
+  buildLangRow(); updatePlainUI();
+  if (body.children.length === 0) renderNode("start", false);
+}
+function closePanel() {
+  document.getElementById("panel").classList.remove("open");
+  document.getElementById("launcher").style.display = "flex";
+  document.getElementById("launcherLabel").style.display = "block";
+}
+function restart() { body.innerHTML = ""; renderNode("start", false); }
+
+function addMsg(text, cls) {
+  const d = document.createElement("div");
+  d.className = "rn-msg " + cls;
+  d.textContent = text;
+  body.appendChild(d);
+  body.scrollTop = body.scrollHeight;
+}
+function addChecklist(cl) {
+  const d = document.createElement("div");
+  d.className = "rn-checklist";
+  const total = cl.items.length;
+  const done = cl.items.filter(it => it.done).length;
+  const pct = Math.round((done / total) * 100);
+  let html = '<div class="title">Enterprise Readiness Index\u2122 — ' + cl.title.replace('Funding-Readiness Checklist — ', '') + '</div>';
+  html += '<div class="rn-score-row"><div class="rn-score-bar"><div class="rn-score-fill" style="width:' + pct + '%"></div></div><div class="rn-score-pct">' + pct + '/100</div></div>';
+  html += '<div class="rn-score-sub">Overall score, calculated from documentation readiness below — not a prediction of approval.</div>';
+  cl.items.forEach(it => { html += '<div class="item ' + (it.done ? 'done' : '') + '"><div class="box"></div><span>' + it.text + '</span></div>'; });
+  if (pct < 100 && cl.estWeeks) {
+    html += '<div class="rn-score-sub" style="margin-top:6px;">Typical time to prepare the remaining items: ' + cl.estWeeks + ' (based on document turnaround, not a BOI decision timeline).</div>';
+  }
+  html += '<div class="index-preview"><div class="ip-label">Index dimensions</div>';
+  html += '<div class="dim-row"><span class="dim-name">Documentation &amp; Preparation</span><div class="dim-bar-wrap"><div class="dim-bar" style="width:' + pct + '%"></div></div><span class="dim-val">' + pct + '/100</span></div>';
+  ["Business Model","Financial Planning","Market Validation","Operations","Leadership"].forEach(dim => {
+    html += '<div class="dim-row"><span class="dim-name">' + dim + '</span><div class="dim-bar-wrap"><div class="dim-bar empty"></div></div><span class="dim-val soon">not yet scored</span></div>';
+  });
+  html += '</div>';
+  d.innerHTML = html;
+  body.appendChild(d);
+  body.scrollTop = body.scrollHeight;
+}
+function addTransformCard(t) {
+  const d = document.createElement("div");
+  d.className = "transform-card";
+  let html = '<div class="tc-flag">\u26A0 ILLUSTRATIVE EXAMPLE OUTPUT \u2014 not generated live from real input in this demo.</div>';
+  html += '<div class="tc-idea">"' + t.idea + '"</div>';
+  t.sections.forEach(([label, text]) => {
+    html += '<div class="tc-section"><div class="tc-label">' + label + '</div><div class="tc-text">' + text + '</div></div>';
+  });
+  d.innerHTML = html;
+  body.appendChild(d);
+  body.scrollTop = body.scrollHeight;
+}
+function addActionCentre(items) {
+  const d = document.createElement("div");
+  d.className = "action-centre";
+  let html = '<div class="ac-title">Today\u2019s Recommended Actions</div>';
+  items.forEach(([label, done]) => {
+    html += '<div class="ac-item"><span class="ac-check">' + (done ? '\u2705' : '\u2b1c') + '</span><span class="' + (done ? 'ac-done' : '') + '">' + label + '</span></div>';
+  });
+  d.innerHTML = html;
+  body.appendChild(d);
+  body.scrollTop = body.scrollHeight;
+}
+function addRoadmap(cl) {
+  const d = document.createElement("div");
+  d.className = "roadmap-card";
+  const remaining = cl.items.filter(it => !it.done);
+  let html = '<div class="title">Runnerbot Enterprise Roadmap</div>';
+  html += '<div class="roadmap-stage"><span class="chk">✓</span> Current Stage: <strong>' + (cl.stage || "Getting Started") + '</strong></div>';
+  html += '<div style="font-size:11px;color:#8A93A8;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;margin:8px 0 4px;">Next Milestones</div>';
+  remaining.forEach(it => { html += '<div class="roadmap-milestone"><div class="sq"></div><span>' + it.text + '</span></div>'; });
+  if (remaining.length === 0) html += '<div class="roadmap-milestone"><span>All required items ready — next step is BOI Consultant review.</span></div>';
+  if (cl.estWeeks) html += '<div class="roadmap-est">Estimated readiness: ' + cl.estWeeks + ' (time to prepare remaining items, not a funding decision timeline).</div>';
+  d.innerHTML = html;
+  body.appendChild(d);
+  body.scrollTop = body.scrollHeight;
+}
+function addTyping() {
+  const d = document.createElement("div");
+  d.className = "rn-msg bot typing"; d.id = "typingIndicator";
+  d.innerHTML = "<span></span><span></span><span></span>";
+  body.appendChild(d); body.scrollTop = body.scrollHeight;
+}
+function removeTyping() { const t = document.getElementById("typingIndicator"); if (t) t.remove(); }
+
+function renderNode(nodeId, showUserMsg, userLabel) {
+  const node = getNode(nodeId);
+  if (showUserMsg) addMsg(userLabel, "user");
+  optionsEl.innerHTML = "";
+  addTyping();
+  setTimeout(() => {
+    removeTyping();
+    node.bot.forEach(line => addMsg(line, node.note ? "bot note" : "bot"));
+    if (node.checklist) { addChecklist(node.checklist); addRoadmap(node.checklist); }
+    if (node.transform) addTransformCard(node.transform);
+    if (nodeId === "transform_result") {
+      addActionCentre([["Complete Readiness Assessment", true], ["Start Business Plan", false], ["Cash-Flow Module", false], ["Book Human Advisor", false], ["Review Documents", false]]);
+    }
+    if (nodeId === "escalate") {
+      addActionCentre([["Complete Readiness Assessment", true], ["Speak with BOI Consultant", true], ["Start Business Plan", false], ["Review Documents", false]]);
+    }
+    node.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "rn-opt" + (opt.next === "escalate" ? " escalate" : "");
+      btn.textContent = opt.label;
+      btn.onclick = () => {
+        if (opt.forceLang) { currentLang = opt.forceLang; buildLangRow(); }
+        renderNode(opt.next, true, opt.label);
+      };
+      optionsEl.appendChild(btn);
+    });
+  }, 550);
+}
+
+setTimeout(() => { document.getElementById("launcherLabel").style.opacity = "1"; }, 800);
+
+// ============ ENTREPRENEUR JOURNEY MAP (runs in real script scope, not via innerHTML) ============
+const journeyStages = [
+  ["Idea", "Runnerbot helps shape a raw idea into something structured enough to evaluate."],
+  ["Validation", "Runnerbot asks the questions that clarify who the customer is and why they'd pay."],
+  ["Business Registration", "Runnerbot explains CAC registration steps in plain language, in the entrepreneur's chosen language."],
+  ["Funding Readiness", "Runnerbot builds the personalised checklist and Enterprise Readiness Index for the right programme."],
+  ["Application", "Runnerbot helps organise documents into a complete, well-structured application."],
+  ["BOI Review", "Handled entirely by BOI officers \u2014 by design, Runnerbot's involvement ends here."],
+  ["Funding", "The funding decision itself \u2014 entirely BOI's, always."],
+  ["Growth", "Runnerbot connects funded entrepreneurs to relevant learning resources as the business scales."],
+  ["Export", "Runnerbot points toward export-readiness resources and relevant BOI/iDICE programmes."],
+  ["Job Creation", "The national outcome this entire pathway is designed to support."],
+];
+function buildJourneyMap() {
+  const row = document.getElementById("journeyRow");
+  if (!row) return; // guard in case entrepreneurView isn't rendered yet
+  row.innerHTML = "";
+  journeyStages.forEach((s, i) => {
+    const step = document.createElement("div");
+    step.className = "journey-step clickable";
+    step.innerHTML = '<div class="journey-dot">' + (i + 1) + '</div><div class="journey-label">' + s[0] + '</div>';
+    step.onclick = () => showJourneyDetail(i);
+    row.appendChild(step);
+    if (i < journeyStages.length - 1) {
+      const arrow = document.createElement("div");
+      arrow.className = "journey-arrow";
+      arrow.textContent = "\u2192";
+      row.appendChild(arrow);
+    }
+  });
+  showJourneyDetail(3); // default to Funding Readiness, the stage Runnerbot is built around
+}
+function showJourneyDetail(i) {
+  document.querySelectorAll("#journeyRow .journey-step").forEach((el, idx) => el.classList.toggle("active", idx === i));
+  const d = document.getElementById("journeyDetail");
+  d.innerHTML = "<strong>" + journeyStages[i][0] + ":</strong> " + journeyStages[i][1];
+  d.classList.add("show");
+}
+buildJourneyMap();
+</script>
+</body>
+</html>
