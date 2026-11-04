@@ -1,0 +1,116 @@
+{
+  "version": "boi-evaluator-knowledge-2026-11-04-v0.1",
+  "lastReviewed": "2026-11-04",
+  "owner": "Runners Futurum",
+  "status": "public-source research; not approved by BOI",
+  "operationalBoundary": "For private evaluation only. No BOI systems, applicant records, lending decisions or approvals connected.",
+  "sources": [
+    {
+      "id": "boi-strategy-2025-2027",
+      "category": "official_BOI",
+      "title": "2025–2027 Corporate Strategy",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/corporate-strategy/",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "BOI describes six focus areas: MSME financing; infrastructure growth; gender and women; youth and skills; climate resilience; digital transformation and technology.",
+        "The Bank aims to deepen sustainable and inclusive industrial development and improve digital delivery channels."
+      ],
+      "caution": "BOI strategy does not establish a partnership with Runners Futurum."
+    },
+    {
+      "id": "boi-iprogrammes",
+      "category": "official_BOI",
+      "title": "BOI iProgrammes Intervention Funds",
+      "publisher": "Bank of Industry",
+      "url": "https://iprogrammes.boi.ng/",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "iProgrammes is BOI's centralized gateway for intervention fund programmes.",
+        "Official portal lists RAPID, GLOW, BOI/NCDMB and other intervention initiatives.",
+        "RAPID provides financial support and business advisory services to nano, micro and small businesses in rural and economically disadvantaged areas.",
+        "GLOW is an intervention fund for women-owned businesses."
+      ],
+      "caution": "Programme availability, eligibility and deadlines can change; evaluator must never determine actual eligibility or submit an application."
+    },
+    {
+      "id": "boi-myboi",
+      "category": "official_BOI",
+      "title": "BOI website — MyBOI portal",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "BOI's official homepage advertises MyBOI as a live portal to apply, track and manage loan applications for BOI facilities."
+      ],
+      "caution": "Distinguish MyBOI general loan services from iProgrammes intervention funds; do not claim access to either."
+    },
+    {
+      "id": "boi-2025-impact-636",
+      "category": "official_BOI",
+      "title": "Bank of Industry Records unprecedented lending to enterprises in 2025",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/bank-of-industry-records-unprecedented-lending-to-enterprises-in-2025/",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "This BOI publication reports ₦636 billion disbursed in 2025 to more than 7,000 businesses.",
+        "This figure differs from ₦644.9 billion cited in Runners Futurum's August proposal and another BOI public impact page."
+      ],
+      "caution": "Do not collapse discrepant figures. Quote amount, source, and report date; seek authoritative reconciliation before using in financial scenarios."
+    },
+    {
+      "id": "boi-2025-impact-644",
+      "category": "official_BOI",
+      "title": "BOI Impact Report 2025: N644.9bn Disbursement & Jobs",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/boi-impact-report-644-9bn-disbursement-1-68m-jobs/",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "This BOI page uses ₦644.9 billion in its impact-report headline."
+      ],
+      "caution": "A separate BOI publication states ₦636 billion. Preserve source attribution; avoid asserting they measure the same accounting category."
+    },
+    {
+      "id": "boi-ifc-2026-11-03",
+      "category": "official_BOI",
+      "title": "BOI and IFC Sign US$50 Million Senior Loan",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/boi-and-ifc-50-million-loan-nigerian-msmes/",
+      "verifiedOn": "2026-11-04",
+      "publicationDate": "2026-11-03",
+      "claims": [
+        "BOI announced a US$50 million senior loan from IFC within a proposed investment package up to US$100 million to expand MSME financing.",
+        "BOI said at least 25% of the loan proceeds are dedicated to women-owned businesses."
+      ],
+      "caution": "Do not infer that this capital is available to any specific applicant or hypothetical uplift model."
+    },
+    {
+      "id": "runners-boi-august-proposal",
+      "category": "runners_proposal",
+      "title": "Runnerbot 2 for BOI — Institutional Pilot Proposal, final (2)",
+      "publisher": "Runners Futurum",
+      "sourceId": "Library: Runners Futurum - Runners Intel - BOI Proposal Final(2).pdf",
+      "publicationDate": "2026-08-13",
+      "claims": [
+        "Proposes a 90-day pilot for one programme and one bounded applicant cohort, no upfront technology fee and no applicant charge.",
+        "Positions Runnerbot 2 upstream of BOI's existing application processes, with decisions retained by BOI officers and BDSPs.",
+        "Commercial scenarios are illustrative; interest income is not profit."
+      ],
+      "caution": "Confidential proposal. Do not expose this document or its unpublished commercial assumptions on the public website or in public GitHub."
+    },
+    {
+      "id": "runners-boi-august-security",
+      "category": "runners_proposal",
+      "title": "Runnerbot 2 for BOI — Technical & Security Appendix (2)",
+      "publisher": "Runners Futurum",
+      "sourceId": "Library: Runners Futurum - Runners Intel - BOI Technical Security Appendix(2).pdf",
+      "publicationDate": "2026-08-13",
+      "claims": [
+        "Describes a proposed architecture and governance posture, not a completed BOI-connected system.",
+        "Explicitly excludes integration with core lending/decisioning, applicant records and iProgrammes during the pilot.",
+        "Identifies BOI-controlled cloud deployment as a possible future option subject to BOI requirements."
+      ],
+      "caution": "Confidential and not approved by BOI. No actual Microsoft Copilot, Azure tenant or BOI-system integration may be claimed."
+    }
+  ]
+}
