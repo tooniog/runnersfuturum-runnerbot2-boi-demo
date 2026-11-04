@@ -1,5 +1,5 @@
 {
-  "version": "boi-evaluator-knowledge-2026-11-04-v0.1",
+  "version": "boi-evaluator-knowledge-2026-11-04-v0.2",
   "lastReviewed": "2026-11-04",
   "owner": "Runners Futurum",
   "status": "public-source research; not approved by BOI",
@@ -111,6 +111,93 @@
         "Identifies BOI-controlled cloud deployment as a possible future option subject to BOI requirements."
       ],
       "caution": "Confidential and not approved by BOI. No actual Microsoft Copilot, Azure tenant or BOI-system integration may be claimed."
+    },
+    {
+      "id": "boi-myboi-launch-2026-10-02",
+      "category": "official_BOI",
+      "title": "BOI Launches MyBOI Portal to Simplify Access to Business Financing",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/myboi-portal-launch/",
+      "publicationDate": "2026-10-02",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "MyBOI went live on October 2, 2026 across official web and mobile channels.",
+        "The portal supports onboarding, forms and assessment, formal application submission, required document upload, application-status updates and communications.",
+        "BOI established hypercare and a MyBOI Situation Room for operational monitoring and resolution."
+      ],
+      "caution": "Runnerbot is NOT another application gateway, status tracker, hypercare system, or a replacement for BOI's official customer support. It cannot access application records or portal sessions."
+    },
+    {
+      "id": "boi-myboi-help-and-language",
+      "category": "official_BOI",
+      "title": "MyBOI Portal — FAQ and programme information",
+      "publisher": "Bank of Industry",
+      "url": "https://devportal.boi.ng/",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "The MyBOI portal already contains searchable programme information, published FAQs and support contacts.",
+        "The portal site exposes Yoruba, Hausa and Igbo variants and additional language routes; do not claim multilingual support as a unique Runnerbot capability.",
+        "MyBOI confirms separate portals for grants and intervention programmes; MyBOI's application tracking and saved drafts already function as published."
+      ],
+      "caution": "The existence of language routes does not establish translation quality or conversational AI support. Review production language coverage before making exact claims."
+    },
+    {
+      "id": "boi-bdsp-2026",
+      "category": "official_BOI",
+      "title": "BOI Business Advisory — 2026 BDSP Directory and Roles",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/business-advisory/",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "BOI publishes a current 2026 BDSP directory and lists 416 SME consultants.",
+        "BDSPs already help enterprises prepare plans, package documents and engage the Bank.",
+        "BOI says engaging a BDSP is not mandatory for applicants."
+      ],
+      "caution": "Runnerbot should extend BDSP capacity by producing transparent, human-reviewable self-reported preparation summaries rather than duplicate BDSP advisory, replace consultants or act as a relationship officer."
+    },
+    {
+      "id": "boi-youth-sapphital-2026-10-28",
+      "category": "official_BOI",
+      "title": "BOI and Federal Ministry of Youth Development partner for 500 youth skills",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/boi-and-federal-ministry-of-youth-development-partner-to-deliver-skills-training-and-enterprise-support-to-500-young-nigerians/",
+      "publicationDate": "2026-10-28",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "BOI launched a 500-person youth empowerment pilot with the Federal Ministry of Youth Development.",
+        "Sapphital, described as an AI-powered learning-management and custom-software provider, will deliver the learning component via NiYA."
+      ],
+      "caution": "Do not compete as an unspecified LMS or claim this partnership is open to Runnerbot. Differentiation is applicant readiness and BDSP case preparation, if selected by BOI."
+    },
+    {
+      "id": "boi-undp-2026-10-21",
+      "category": "official_BOI",
+      "title": "BOI-UNDP Enterprise Growth and Inclusive Industrialisation Partnership",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/boi-undp-partnership-enterprise-growth-nigeria/",
+      "publicationDate": "2026-10-21",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "BOI and UNDP signed a three-year MoU to strengthen enterprise competitiveness, access to finance and markets, with attention to women and young people."
+      ],
+      "caution": "These are partnership objectives, not outcomes attributable to Runnerbot or a guaranteed procurement opportunity."
+    },
+    {
+      "id": "boi-ifc-msme-2026-11-03",
+      "category": "official_BOI",
+      "title": "BOI and IFC sign $50m senior loan within up-to-$100m package",
+      "publisher": "Bank of Industry",
+      "url": "https://www.boi.ng/boi-and-ifc-50-million-loan-nigerian-msmes/",
+      "publicationDate": "2026-11-03",
+      "verifiedOn": "2026-11-04",
+      "claims": [
+        "BOI and IFC signed a US$50m seven-year senior loan toward MSME and productive enterprise financing within a possible package of up to US$100m.",
+        "At least 25% of the loan proceeds are intended for women-owned enterprises.",
+        "Completion of definitive documentation and customary conditions was still required as of publication."
+      ],
+      "caution": "Do not imply the committed facility has already disbursed or can cover hypothetical incremental lending."
     }
-  ]
+  ],
+  "positioning": "Private evaluation only: preparation-quality, evidence-based self-reported documentation review, BDSP handoff assistance, and measurable reductions in rework; no application submission, eligibility determination, official status tracking or BOI-system integration.",
+  "confidentiality": "Only summarize published information and already-public high-level pilot framing in this public repository. Full proposal/security appendix remain confidential and must NOT be committed."
 }
