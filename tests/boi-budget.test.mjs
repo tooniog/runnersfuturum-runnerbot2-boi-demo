@@ -7,7 +7,7 @@ test("hard authorization ceiling and normal stop remain fixed",()=>{
  assert.equal(HARD_CEILING_MICRO_USD-NORMAL_STOP_MICRO_USD,20000);
 });
 test("reserve estimator rejects oversized and malformed prompts",()=>{
- assert.throws(()=>reserveEstimate({prompt:"x".repeat(13501)}));
+ assert.throws(()=>reserveEstimate({prompt:"x".repeat(26001)}));
  assert.throws(()=>reserveEstimate({prompt:"test",outputTokens:321}));
  assert.throws(()=>reserveEstimate({prompt:"test",outputTokens:0}));
  assert.throws(()=>reserveEstimate({prompt:null}));

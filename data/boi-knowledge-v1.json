@@ -1,6 +1,6 @@
 {
-  "version": "boi-evaluator-knowledge-2026-11-04-v0.2",
-  "lastReviewed": "2026-11-04",
+  "version": "boi-evaluator-knowledge-2026-11-05-v0.3",
+  "lastReviewed": "2026-11-05",
   "owner": "Runners Futurum",
   "status": "public-source research; not approved by BOI",
   "operationalBoundary": "For private evaluation only. No BOI systems, applicant records, lending decisions or approvals connected.",
@@ -132,8 +132,8 @@
       "category": "official_BOI",
       "title": "MyBOI Portal — FAQ and programme information",
       "publisher": "Bank of Industry",
-      "url": "https://devportal.boi.ng/",
-      "verifiedOn": "2026-11-04",
+      "url": "https://onlineportal.boi.ng/",
+      "verifiedOn": "2026-11-05",
       "claims": [
         "The MyBOI portal already contains searchable programme information, published FAQs and support contacts.",
         "The portal site exposes Yoruba, Hausa and Igbo variants and additional language routes; do not claim multilingual support as a unique Runnerbot capability.",
@@ -196,6 +196,20 @@
         "Completion of definitive documentation and customary conditions was still required as of publication."
       ],
       "caution": "Do not imply the committed facility has already disbursed or can cover hypothetical incremental lending."
+    },
+    {
+      "id": "myboi-bdsp-faq",
+      "category": "official_BOI",
+      "title": "MyBOI BDSP responsibilities and support",
+      "publisher": "Bank of Industry",
+      "url": "https://onlineportal.boi.ng/ig/faqs",
+      "verifiedOn": "2026-11-05",
+      "claims": [
+        "BDSP assistance is optional. Applicants submit through their own MyBOI profiles.",
+        "BDSPs may help organise plans, financial models and documentation; they must not retain portal credentials.",
+        "No separate BDSP application-tracking dashboard or formal representative appointment is currently provided."
+      ],
+      "caution": "Preparation summaries here are synthetic and not an appointment, official referral or completed handoff."
     }
   ],
   "positioning": "Private evaluation only: preparation-quality, evidence-based self-reported documentation review, BDSP handoff assistance, and measurable reductions in rework; no application submission, eligibility determination, official status tracking or BOI-system integration.",

@@ -1,0 +1,3 @@
+import {verifySession,cookieValue,secureHeaders} from '../lib/boi-session.mjs';
+import {budgetAvailable,modelConfig} from '../lib/boi-budget.mjs';
+export default async function handler(req,res){secureHeaders(res);if(req.method!=='GET')return res.status(405).end();const session=verifySession(cookieValue(req),process.env.BOI_COOKIE_SECRET);if(!session)return res.status(401).json({authenticated:false});let available=false;try{modelConfig();available=process.env.BOI_AI_ENABLED==='true'&&process.env.BOI_AI_PRICING_CONFIRMED==='true'&&!!process.env.OPENAI_API_KEY&&await budgetAvailable();}catch{}return res.status(200).json({authenticated:true,role:session.role,aiAvailable:available,knowledgeVersion:'boi-evaluator-knowledge-2026-11-05-v0.3',noBoiSystemsConnected:true});}

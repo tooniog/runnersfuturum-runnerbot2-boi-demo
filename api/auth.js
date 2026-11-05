@@ -14,8 +14,8 @@ function body(req) {
 function fingerprint(req,secret) {
   // Vercel-supplied forwarding address; only a hashed fingerprint is retained.
   const ip=String(req.headers["x-vercel-forwarded-for"]||req.headers["x-forwarded-for"]||"unknown").split(",")[0].trim().slice(0,70);
-  const agent=String(req.headers["user-agent"]||"").slice(0,100);
-  return createHash("sha256").update(secret+"|"+ip+"|"+agent).digest("hex");
+  
+  return createHash("sha256").update(secret+"|"+ip).digest("hex");
 }
 
 export default async function handler(req,res) {
