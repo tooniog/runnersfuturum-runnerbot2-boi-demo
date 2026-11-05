@@ -1,0 +1,26 @@
+name: BOI evaluator safeguards
+on:
+  push:
+    branches:
+      - boi-live-evaluator-20261104
+  pull_request:
+    paths:
+      - 'lib/**'
+      - 'api/**'
+      - 'tests/**'
+      - 'package.json'
+      - '.github/workflows/boi-evaluator-tests.yml'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies without running lifecycle scripts
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Verify syntax and deterministic safeguards
+        run: npm run check
