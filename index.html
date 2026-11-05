@@ -364,25 +364,70 @@
   </div>
 </div>
 <script>
+// Evaluator gate is backed by server-side signed HttpOnly sessions.
+// This visual gate is not itself a security boundary: production content
+// must remain behind deployment protection until route-level access is verified.
 (function(){
-  var CODE = "BOI-2026";
-  var g=document.getElementById('rnGate'), i=document.getElementById('rnPw'),
-      b=document.getElementById('rnGo'), e=document.getElementById('rnErr');
-  try { if (sessionStorage.getItem('rnOk')==='1') { g.remove(); return; } } catch(_){}
+  const gate=document.getElementById('rnGate');
+  const input=document.getElementById('rnPw');
+  const button=document.getElementById('rnGo');
+  const error=document.getElementById('rnErr');
   document.body.style.overflow='hidden';
-  function go(){
-    if (i.value.trim().toLowerCase() === CODE.toLowerCase()) {
-      try { sessionStorage.setItem('rnOk','1'); } catch(_){}
-      document.body.style.overflow=''; g.style.opacity='0';
-      g.style.transition='opacity .35s ease'; setTimeout(function(){ g.remove(); }, 350);
-    } else {
-      e.textContent='Incorrect access code.'; i.value=''; i.focus();
-      g.style.transform='translateX(-6px)'; setTimeout(function(){ g.style.transform=''; },90);
+
+  function showError(message) {
+    error.textContent=message;
+    input.value='';
+  }
+  function unlock() {
+    document.body.style.overflow='';
+    gate.style.opacity='0';
+    gate.style.transition='opacity .35s ease';
+    setTimeout(function(){gate.remove();},350);
+  }
+  async function inspectExistingSession() {
+    try {
+      const response=await fetch('/api/auth',{method:'GET',credentials:'same-origin',cache:'no-store'});
+      const result=await response.json();
+      if(response.ok && result.authenticated===true) unlock();
+    } catch {
+      showError('Secure sign-in is currently unavailable.');
     }
   }
-  b.addEventListener('click', go);
-  i.addEventListener('keydown', function(ev){ if(ev.key==='Enter') go(); });
-  setTimeout(function(){ i.focus(); }, 200);
+  async function signIn(){
+    if(!input.value){showError('Enter your evaluator password.');return;}
+    const password=input.value;
+    input.value='';
+    button.disabled=true;
+    button.textContent='Verifying…';
+    error.textContent='';
+    try{
+      const response=await fetch('/api/auth?action=login',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'same-origin',
+        cache:'no-store',
+        body:JSON.stringify({password})
+      });
+      const result=await response.json();
+      if(response.ok && result.authenticated===true) {
+        unlock();
+      } else if(response.status===429) {
+        showError('Too many attempts. Try again later.');
+      } else if(response.status===503) {
+        showError('Secure sign-in is not configured yet.');
+      } else {
+        showError('Incorrect credentials.');
+      }
+    }catch{
+      showError('Secure sign-in is temporarily unavailable.');
+    }finally{
+      button.disabled=false;
+      button.textContent='Enter';
+    }
+  }
+  button.addEventListener('click',signIn);
+  input.addEventListener('keydown',function(e){if(e.key==='Enter')signIn();});
+  inspectExistingSession();
 })();
 </script>
 
