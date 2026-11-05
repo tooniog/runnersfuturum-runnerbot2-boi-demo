@@ -8,7 +8,7 @@ test("hard authorization ceiling and normal stop remain fixed",()=>{
 });
 test("reserve estimator rejects oversized and malformed prompts",()=>{
  assert.throws(()=>reserveEstimate({prompt:"x".repeat(26001)}));
- assert.throws(()=>reserveEstimate({prompt:"test",outputTokens:321}));
+ assert.throws(()=>reserveEstimate({prompt:"test",outputTokens:641}));
  assert.throws(()=>reserveEstimate({prompt:"test",outputTokens:0}));
  assert.throws(()=>reserveEstimate({prompt:null}));
 });
