@@ -1136,25 +1136,6 @@ rnReset.addEventListener("click",restart);
 buildLangRow();updatePlainUI();
 setTimeout(()=>{const label=document.getElementById("launcherLabel");if(label)label.style.opacity="1";},800);
 
-iew Documents", false]]);
-    }
-    if (nodeId === "escalate") {
-      addActionCentre([["Complete Readiness Assessment", true], ["Speak with BOI Consultant", true], ["Start Business Plan", false], ["Review Documents", false]]);
-    }
-    node.options.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.className = "rn-opt" + (opt.next === "escalate" ? " escalate" : "");
-      btn.textContent = opt.label;
-      btn.onclick = () => {
-        if (opt.forceLang) { currentLang = opt.forceLang; buildLangRow(); }
-        renderNode(opt.next, true, opt.label);
-      };
-      optionsEl.appendChild(btn);
-    });
-  }, 550);
-}
-
-setTimeout(() => { document.getElementById("launcherLabel").style.opacity = "1"; }, 800);
 
 // ============ ENTREPRENEUR JOURNEY MAP (runs in real script scope, not via innerHTML) ============
 const journeyStages = [
