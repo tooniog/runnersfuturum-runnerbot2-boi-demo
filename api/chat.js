@@ -50,6 +50,13 @@ export function classifiedDecline(message) {
   const t=message.toLowerCase();
   if(/\b(?:bvn|bank\s*(?:account\s*)?password|pin\s*code|otp|one.time.password|passport\s*scan|national\s*id\s*image)\b/i.test(message))
     return "Please do not enter BVNs, credentials, OTPs or identity documents. This private evaluator cannot accept or process them. Use BOI's official channels for any required formal submission.";
+  // Mixed-intent requests must answer every institutional-boundary question.
+  const approvalRequest=/\b(?:approve|reject|guarantee)\s+(?:my\s+|this\s+|the\s+)?(?:loan|application|facility)\b/i.test(message);
+  const realStatusRequest=/\b(?:(?:my|actual|real)\s+(?:BOI\s+)?(?:application|loan)\s+(?:status|progress)|(?:status|progress)\s+of\s+(?:my|the|an)\s+(?:real\s+|actual\s+)?(?:BOI\s+)?(?:loan\s+)?application)\b/i.test(message);
+  if(approvalRequest && realStatusRequest)
+    return "Runnerbot 2 cannot approve, reject or guarantee BOI financing; only authorised BOI officers can make financing decisions. I also cannot see the status of your real BOI application or access BOI records. No application has been submitted or reviewed through this evaluator. Check your own MyBOI account or contact BOI Customer Care: https://onlineportal.boi.ng/pcm/contact . Never share portal passwords or OTPs.";
+  if(realStatusRequest)
+    return "I cannot access or verify the status of your real BOI application, and this private evaluator has not submitted a case. Please check your own MyBOI account or contact BOI Customer Care: https://onlineportal.boi.ng/pcm/contact . Never share portal passwords or OTPs.";
   if(/\b(?:approve|reject|guarantee)\s+(?:my\s+|this\s+|the\s+)?(?:loan|application|facility)\b/i.test(message))
     return "Runnerbot 2 cannot approve, reject or guarantee BOI financing. Decisions belong solely to authorised BOI officers. I can help you prepare and identify published requirements; use the official BOI portal for any formal application.";
   if(/\b(?:show|access|retrieve|read|leak)\b.{0,40}\b(?:confidential|internal\s+applicant|private\s+bank|loan\s+records)\b/i.test(message))
