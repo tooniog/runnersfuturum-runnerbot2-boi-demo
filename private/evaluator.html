@@ -366,6 +366,11 @@
   .rn-msg {overflow-wrap:anywhere;white-space:pre-wrap;}
   @media(max-width:480px){.rn-panel {right:8px;bottom:8px;width:calc(100vw - 16px);height:calc(100dvh - 16px);}}
 
+
+  /* Professional, low-friction language feedback without alarm styling. */
+  .rn-language-state{display:inline-flex;margin:9px 16px 0;border:1px solid rgba(121,226,174,.35);background:rgba(6,42,48,.3);border-radius:8px;color:#c5f6dc;padding:6px 9px;font:600 11px/1.4 Inter,system-ui,sans-serif;max-width:calc(100% - 32px);}
+  .rn-panel .lang-draft-badge{display:none;margin:6px 16px 0;padding:0;background:transparent!important;border:0!important;color:#c7d5eb!important;font-size:10px;font-weight:400;line-height:1.5;}
+  .rn-panel .lang-draft-badge.show{display:block;}
 </style>
 </head>
 <body>
@@ -928,7 +933,8 @@
         <div class="rn-close" role="button" tabindex="0" aria-label="Close Runnerbot 2 assistant" onclick="closePanel()">&times;</div>
       </div>
       <div class="rn-lang-row" id="langRow"></div>
-      <div class="lang-draft-badge" id="langDraftBadge">⚠ AI-drafted translation — pending native-speaker &amp; financial-terminology review before real deployment. Figures and programme names are kept exact.</div>
+      <div id="rn-language-state" class="rn-language-state" role="status" aria-live="polite">Response language: English</div>
+      <div class="lang-draft-badge" id="langDraftBadge">AI-supported language option. Verify financial terminology against official BOI guidance.</div>
       <div class="rn-plain-toggle">
         <div class="rn-switch" id="plainSwitch"><div class="knob"></div></div>
         <span id="plainLabel">Plain Language mode (simpler words, shorter sentences)</span>
@@ -953,6 +959,28 @@
 // Live corner assistant uses the SAME authenticated BOI chat handler, source grounding,
 // session roles and atomic AI spend reservations as the primary evaluator.
 const langLabels = {en:"English",pcm:"Nigerian Pidgin",yo:"Yoruba",ha:"Hausa",ig:"Igbo"};
+const rnLocalizedWelcome={
+  en:"Hi, I'm Runnerbot 2. Ask me about BOI programmes, business preparation, BDSP support or financing documentation. I give guidance, not approvals. What would you like help with?",
+  pcm:"How far! I be Runnerbot 2. I fit help you understand BOI programmes and wetin you need prepare. Wetin you wan ask?",
+  yo:"Ẹ káàbọ̀! Èmi ni Runnerbot 2. Mo lè ràn yín lọ́wọ́ pẹ̀lú ìbéèrè nípa àwọn ètò BOI àti bí ẹ ṣe lè múra sílẹ̀. Kí ni ẹ fẹ́ mọ̀?",
+  ha:"Sannu! Ni Runnerbot 2. Zan iya taimaka maka da tambayoyi game da shirye-shiryen BOI da yadda za ka shirya. Me kake son sani?",
+  ig:"Nnọọ! Abụ m Runnerbot 2. Enwere m ike inyere gị aka na ajụjụ gbasara mmemme BOI na nkwadebe azụmahịa. Kedu ihe ị chọrọ ịma?"
+};
+const rnLocalizedPlaceholder={
+  en:"Ask a BOI financing or preparation question…",
+  pcm:"Ask about BOI money support or wetin to prepare…",
+  yo:"Béèrè ìbéèrè nípa BOI tàbí ìmúrasílẹ̀…",
+  ha:"Yi tambaya kan tallafin BOI ko shiri…",
+  ig:"Jụọ ajụjụ gbasara BOI ma ọ bụ nkwadebe…"
+};
+function refreshLocale(){
+  const selected=selectedLanguage();
+  const label=document.getElementById("rn-language-state");
+  label.textContent="Response language: "+selected+" · Next answer will use this language";
+  rnQuestion.placeholder=rnLocalizedPlaceholder[currentLang];
+  const welcome=document.getElementById("rn-intro");
+  if(welcome && rnHistory.length===0)welcome.textContent=rnLocalizedWelcome[currentLang];
+}
 let currentLang = "en";
 let plainMode = false;
 let rnHistory = [];
@@ -992,7 +1020,8 @@ function buildLangRow() {
     };
     row.appendChild(button);
   });
-  document.getElementById("langDraftBadge").classList.toggle("show",["yo","ha","ig"].includes(currentLang));
+  document.getElementById("langDraftBadge").classList.toggle("show",currentLang!=="en");
+  refreshLocale();
 }
 function updatePlainUI() {
   const sw=document.getElementById("plainSwitch");
@@ -1084,7 +1113,8 @@ function restart() {
   rnHistory=[];
   body.replaceChildren();
   rnQuestion.value="";
-  addMsg("Hi, I'm Runnerbot 2. Ask me about BOI programmes, business preparation, BDSP support or financing documentation. I give guidance, not approvals. What would you like help with?","bot");
+  addMsg(rnLocalizedWelcome[currentLang],"bot");
+  body.lastElementChild.id="rn-intro";
   rnStatus.textContent="Live AI is available only while the shared evaluator budget and service are available. Never enter real applicant records.";
   buildSuggestions();
 }
