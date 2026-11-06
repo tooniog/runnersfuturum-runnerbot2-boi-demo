@@ -26,9 +26,9 @@ test("tour is demonstrably synthetic, no paid model calls, and user can navigate
   assert.match(live,/SCRIPTED · SYNTHETIC · NO MODEL CALLS/);
   assert.match(live,/showcaseScenes\.forEach/);
   assert.match(live,/button\.onclick=\(\)=>\{stopShowcase\(\);sceneIndex=i;renderShowcase\(\);/);
-  assert.match(live,/\\$\\('tour-play'\\)\.onclick/);
-  assert.match(live,/\\$\\('tour-next'\\)\.onclick/);
-  assert.match(live,/\\$\\('tour-prev'\\)\.onclick/);
+  assert.ok(live.includes("$('tour-play').onclick"));
+  assert.ok(live.includes("$('tour-next').onclick"));
+  assert.ok(live.includes("$('tour-prev').onclick"));
   assert.match(live,/No application|no institutional|not live|no live|no model/i);
   assert.doesNotMatch(live,/Watch a preparation review/);
 });
