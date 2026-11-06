@@ -909,7 +909,7 @@
   </script>
 
   <div class="rn-launcher-label" id="launcherLabel">👋 Ask Runnerbot 2 about funding</div>
-  <div class="rn-launcher" id="launcher" onclick="openPanel()">
+  <div class="rn-launcher" id="launcher" role="button" tabindex="0" aria-label="Open Runnerbot 2 live assistant" onclick="openPanel()">
     <div class="pulse"></div>
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M4 18L2.5 21.5L6 20C7.5 20.7 9.2 21 11 21C16.5 21 21 17 21 12C21 7 16.5 3 11 3C5.5 3 1 7 1 12C1 14.3 1.9 16.4 3.4 18L4 18Z" fill="white" stroke="white" stroke-width="0.5"/>
@@ -923,9 +923,9 @@
         <div class="rn-head-badge"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" fill="#0A2A97"/></svg></div>
         <div class="rn-head-text">
           <div class="name">Runnerbot 2 — Enterprise Intelligence Platform</div>
-          <div class="status"><span class="dot"></span>Guidance mode · human escalation always available</div>
+          <div class="status"><span class="dot"></span>Live BOI-scoped guidance · no direct BOI connection</div>
         </div>
-        <div class="rn-close" onclick="closePanel()">&times;</div>
+        <div class="rn-close" role="button" tabindex="0" aria-label="Close Runnerbot 2 assistant" onclick="closePanel()">&times;</div>
       </div>
       <div class="rn-lang-row" id="langRow"></div>
       <div class="lang-draft-badge" id="langDraftBadge">⚠ AI-drafted translation — pending native-speaker &amp; financial-terminology review before real deployment. Figures and programme names are kept exact.</div>
@@ -1134,6 +1134,11 @@ rnQuestion.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendLiveQuestion();}
 });
 rnReset.addEventListener("click",restart);
+document.getElementById("rn-full-workspace").addEventListener("click",closePanel);
+for(const [id,action] of [["launcher",openPanel],["panel",null]]) {
+  if(id==="launcher")document.getElementById(id).addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();action();}});
+}
+document.querySelector("#panel .rn-close").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();closePanel();}});
 buildLangRow();updatePlainUI();
 setTimeout(()=>{const label=document.getElementById("launcherLabel");if(label)label.style.opacity="1";},800);
 
