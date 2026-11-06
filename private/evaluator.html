@@ -345,7 +345,6 @@
 
 
 
-
   /* Authenticated, actual live BOI conversation in the corner widget. */
   .rn-panel {max-height:calc(100dvh - 22px);}
   .rn-body {min-height:80px;flex:1;overflow-y:auto;overscroll-behavior:contain;}
@@ -937,7 +936,21 @@
     </div>
     <div class="rn-disclosure" id="disclosureText">Live BOI-scoped AI when budget permits. Synthetic examples only. No BOI records, applications, approvals or human handoffs are connected.</div>
     <div class="rn-body" id="chatBody" role="log" aria-live="polite" aria-label="Runnerbot 2 live conversation"></div>
-    <div class="rn-options// Live corner assistant uses the SAME authenticated BOI chat handler, source grounding,
+    <div class="rn-options" id="chatOptions" aria-label="Suggested questions"></div>
+    <form id="rn-live-form" class="rn-live-form">
+      <label for="rn-question" class="rn-live-label">Your question</label>
+      <textarea id="rn-question" maxlength="1200" rows="2" placeholder="Ask a BOI financing or preparation question…" autocomplete="off" required></textarea>
+      <div class="rn-live-actions">
+        <button type="submit" id="rn-send">Send</button>
+        <button type="button" id="rn-reset">Clear chat</button>
+        <a href="#eval-chat" id="rn-full-workspace">Full evaluator</a>
+      </div>
+      <p id="rn-live-status" role="status" aria-live="polite">No personal details, BVN, account numbers, passwords or OTPs.</p>
+    </form>
+  </div>
+
+<script>
+// Live corner assistant uses the SAME authenticated BOI chat handler, source grounding,
 // session roles and atomic AI spend reservations as the primary evaluator.
 const langLabels = {en:"English",pcm:"Nigerian Pidgin",yo:"Yoruba",ha:"Hausa",ig:"Igbo"};
 let currentLang = "en";
