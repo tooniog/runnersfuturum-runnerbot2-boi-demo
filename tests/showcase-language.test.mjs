@@ -69,3 +69,36 @@ test("language selection provides instant greeting and next-response indication 
     assert.match(document.getElementById("langDraftBadge").textContent,/Verify financial terminology/i);
   }finally{d.window.close();}
 });
+
+test("scenario player renders nine real navigable, autoplayable synthetic scenes in the page DOM",()=>{
+  const start=live.indexOf('<div class="eval-card showcase-card"');
+  const end=live.indexOf('<div class="eval-card"><h2>What is working',start);
+  assert.ok(start>0 && end>start,"Showcase markup present in authenticated workspace");
+  const markup=live.slice(start,end);
+  const a=live.indexOf("const showcaseTabs=$('showcase-tabs');");
+  const b=live.indexOf("renderShowcase();\nfetch('/api/status')",a);
+  assert.ok(a>0 && b>a,"Showcase controller present and isolated");
+  const controller=live.slice(a,b+"renderShowcase();".length);
+  const dom=new JSDOM("<!doctype html><html><body>"+markup+"</body></html>");
+  let tick;
+  const run=new Function("document","showcaseScenes","showcaseOverview","setInterval","clearInterval","const $=id=>document.getElementById(id);"+"\n"+controller);
+  try{
+    run(dom.window.document,showcaseScenes,showcaseOverview,(cb,ms)=>{assert.equal(ms,7200);tick=cb;return 9;},()=>{tick=undefined;});
+    const d=dom.window.document;
+    assert.equal(d.querySelectorAll(".showcase-tab").length,9);
+    assert.match(d.getElementById("showcase-title").textContent,/Understand/);
+    d.querySelectorAll(".showcase-tab")[3].click();
+    assert.match(d.getElementById("showcase-title").textContent,/financial discrepancy/);
+    assert.match(d.getElementById("showcase-answer").textContent,/₦350,000/);
+    assert.equal(d.querySelectorAll("#showcase-process li").length,3);
+    d.getElementById("tour-play").click();
+    assert.equal(d.getElementById("tour-play").getAttribute("aria-pressed"),"true");
+    assert.equal(typeof tick,"function");
+    tick();
+    assert.match(d.getElementById("showcase-title").textContent,/BDSP-ready/);
+    d.getElementById("tour-reset").click();
+    assert.match(d.getElementById("showcase-title").textContent,/Understand/);
+    assert.equal(d.getElementById("tour-play").getAttribute("aria-pressed"),"false");
+    assert.match(d.getElementById("showcase-position").textContent,/1 of 9/);
+  }finally{dom.window.close();}
+});
