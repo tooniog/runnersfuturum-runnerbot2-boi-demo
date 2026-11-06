@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {Script} from "node:vm";
+import {Script,runInContext} from "node:vm";
 import {JSDOM} from "jsdom";
 
 const html=readFileSync(new URL("../private/evaluator.html",import.meta.url),"utf8");
@@ -12,7 +12,7 @@ function widget(fetchHandler) {
   const dom=new JSDOM(html,{url:"https://runnersfuturum-runnerbot2-boi-demo.vercel.app/",runScripts:"outside-only"});
   dom.window.AbortSignal.timeout=()=>undefined;
   dom.window.fetch=fetchHandler;
-  dom.window.eval(match[1]);
+  runInContext(match[1],dom.getInternalVMContext());
   dom.window.openPanel();
   return dom;
 }
