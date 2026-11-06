@@ -930,7 +930,7 @@
       <div class="rn-lang-row" id="langRow"></div>
       <div class="lang-draft-badge" id="langDraftBadge">⚠ AI-drafted translation — pending native-speaker &amp; financial-terminology review before real deployment. Figures and programme names are kept exact.</div>
       <div class="rn-plain-toggle">
-        <div class="rn-switch" id="plainSwitch" onclick="togglePlain()"><div class="knob"></div></div>
+        <div class="rn-switch" id="plainSwitch"><div class="knob"></div></div>
         <span id="plainLabel">Plain Language mode (simpler words, shorter sentences)</span>
       </div>
     </div>
@@ -1009,6 +1009,7 @@ function togglePlain() {
   updatePlainUI();
   rnStatus.textContent="Next reply: "+selectedLanguage()+".";
 }
+document.getElementById("plainSwitch").addEventListener("click",togglePlain);
 document.getElementById("plainSwitch").addEventListener("keydown",e=>{
   if(e.key==="Enter"||e.key===" "){e.preventDefault();togglePlain();}
 });
