@@ -1,1 +1,40 @@
-{"version":"2026-11-09.1","status":"STAGING_CHECKS_IN_PROGRESS","syntheticOnly":true,"institutionalAccuracyMeasured":false,"paidAiAuthorisedUsd":0.30,"normalStopUsd":0.27,"safetyReserveUsd":0.03,"notification":"Founder notification pending — manual action required.","limitations":["No BOI system access or endorsement","No professional financial-translation validation","English detailed financial terminology and institutional source text remain the reference","Provider retention and deployment residency need pilot approval"]}
+{
+  "version": "2026-11-09.1",
+  "status": "STAGING_READY_AUTHENTICATED_QA_BLOCKED",
+  "commit": "223c670fb95978060f700b021cb68b0536c982ff",
+  "stagingDeployment": "dpl_HycTQK9oezEwqXLxkiZ7nPKBTJwv",
+  "stagingUrl": "https://runnersfuturum-runnerbot2-boi-demo-9mkg19zaw.vercel.app",
+  "automatedTests": {
+    "passed": 58,
+    "failed": 0
+  },
+  "browserChecks": {
+    "environment": "local synthetic fixture",
+    "desktop": true,
+    "mobileViewportWidth": 375,
+    "mobileScrollWidth": 375,
+    "forecastStep2ThirdMonthClosingNgn": 680000,
+    "yorubaControls": true
+  },
+  "productionChanged": false,
+  "productionRollbackDeployment": "dpl_7x71Dw3g76xP8LuZpdeYbyVUjLwx",
+  "paidAiCallsThisContinuation": 0,
+  "productionLedger": {
+    "ceilingUsd": 0.1,
+    "normalStopUsd": 0.08,
+    "conservativeDebitUsd": 0.011352,
+    "outstandingReservationsUsd": 0
+  },
+  "authorisedUpgrade": {
+    "ceilingUsd": 0.3,
+    "normalStopUsd": 0.27,
+    "migrationAppliedToProduction": false
+  },
+  "notification": "Founder notification pending — manual action required.",
+  "limitations": [
+    "Authenticated staging and live model verification pending; no promotion performed",
+    "Partial UI localisation; English financial and source detail retained",
+    "No native-speaker financial validation",
+    "No BOI system access, real applicant processing or endorsement"
+  ]
+}
