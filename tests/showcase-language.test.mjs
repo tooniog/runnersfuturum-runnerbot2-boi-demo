@@ -8,10 +8,10 @@ import {runInContext} from "node:vm";
 const live=readFileSync(new URL("../boi-live.js",import.meta.url),"utf8");
 const html=readFileSync(new URL("../private/evaluator.html",import.meta.url),"utf8");
 
-test("showcase covers nine distinct BOI scenarios with specific evidence, safeguards and next steps",()=>{
-  assert.equal(showcaseScenes.length,9);
-  assert.equal(showcaseOverview.count,9);
-  assert.equal(new Set(showcaseScenes.map(x=>x.id)).size,9);
+test("showcase covers fifteen distinct BOI scenarios with specific evidence, safeguards and next steps",()=>{
+  assert.equal(showcaseScenes.length,15);
+  assert.equal(showcaseOverview.count,15);
+  assert.equal(new Set(showcaseScenes.map(x=>x.id)).size,15);
   for(const scenario of showcaseScenes){
     for(const field of ["title","subtitle","prompt","answer","evidence","handoff","boundary","outcome","metric","sector"]){
       assert.ok(typeof scenario[field]==="string"&&scenario[field].length>8,scenario.id+" missing "+field);
@@ -25,7 +25,7 @@ test("showcase covers nine distinct BOI scenarios with specific evidence, safegu
 test("tour is demonstrably synthetic, no paid model calls, and user can navigate every scenario",()=>{
   assert.match(live,/SCRIPTED · SYNTHETIC · NO MODEL CALLS/);
   assert.match(live,/showcaseScenes\.forEach/);
-  assert.match(live,/button\.onclick=\(\)=>\{stopShowcase\(\);sceneIndex=i;renderShowcase\(\);/);
+  assert.match(live,/button\.onclick=\(\)=>\{stopShowcase\(\);sceneIndex=i;workflowStep=0;renderShowcase\(\);/);
   assert.ok(live.includes("$('tour-play').onclick"));
   assert.ok(live.includes("$('tour-next').onclick"));
   assert.ok(live.includes("$('tour-prev').onclick"));
@@ -70,35 +70,26 @@ test("language selection provides instant greeting and next-response indication 
   }finally{d.window.close();}
 });
 
-test("scenario player renders nine real navigable, autoplayable synthetic scenes in the page DOM",()=>{
-  const start=live.indexOf('<div class="eval-card showcase-card"');
-  const end=live.indexOf('<div class="eval-card"><h2>What is working',start);
-  assert.ok(start>0 && end>start,"Showcase markup present in authenticated workspace");
-  const markup=live.slice(start,end);
-  const a=live.indexOf("const showcaseTabs=$('showcase-tabs');");
-  const b=live.indexOf("renderShowcase();\nfetch('/api/status')",a);
-  assert.ok(a>0 && b>a,"Showcase controller present and isolated");
-  const controller=live.slice(a,b+"renderShowcase();".length);
-  const dom=new JSDOM("<!doctype html><html><body>"+markup+"</body></html>");
-  let tick;
-  const run=new Function("document","showcaseScenes","showcaseOverview","setInterval","clearInterval","const $=id=>document.getElementById(id);"+"\n"+controller);
-  try{
-    run(dom.window.document,showcaseScenes,showcaseOverview,(cb,ms)=>{assert.equal(ms,7200);tick=cb;return 9;},()=>{tick=undefined;});
-    const d=dom.window.document;
-    assert.equal(d.querySelectorAll(".showcase-tab").length,9);
-    assert.match(d.getElementById("showcase-title").textContent,/Understand/);
-    d.querySelectorAll(".showcase-tab")[3].click();
-    assert.match(d.getElementById("showcase-title").textContent,/financial discrepancy/);
-    assert.match(d.getElementById("showcase-answer").textContent,/₦350,000/);
-    assert.equal(d.querySelectorAll("#showcase-process li").length,3);
-    d.getElementById("tour-play").click();
-    assert.equal(d.getElementById("tour-play").getAttribute("aria-pressed"),"true");
-    assert.equal(typeof tick,"function");
-    tick();
-    assert.match(d.getElementById("showcase-title").textContent,/BDSP-ready/);
-    d.getElementById("tour-reset").click();
-    assert.match(d.getElementById("showcase-title").textContent,/Understand/);
-    assert.equal(d.getElementById("tour-play").getAttribute("aria-pressed"),"false");
-    assert.match(d.getElementById("showcase-position").textContent,/1 of 9/);
-  }finally{dom.window.close();}
+test("scenario player advances through states, stops and switches all languages without paid calls",async()=>{
+ const dom=new JSDOM('<body><div class="transparency-banner"></div></body>',{url:'https://test.example/'});
+ const old={document:globalThis.document,location:globalThis.location,fetch:globalThis.fetch,setInterval:globalThis.setInterval,clearInterval:globalThis.clearInterval};let tick;
+ globalThis.document=dom.window.document;globalThis.location=dom.window.location;
+ globalThis.fetch=async()=>({json:async()=>({authenticated:true,role:'EVALUATOR_OBSERVER'})});
+ globalThis.setInterval=cb=>{tick=cb;return 42;};globalThis.clearInterval=()=>{tick=null;};
+ try{
+  await import('../boi-live.js?workflow-test');const d=dom.window.document,$=id=>d.getElementById(id);
+  assert.equal(d.querySelectorAll('.showcase-tab').length,15);
+  assert.equal($('workflow-state').dataset.step,'0');$('tour-play').click();tick();
+  assert.equal($('workflow-state').dataset.step,'1');tick();assert.equal($('workflow-state').dataset.step,'2');tick();
+  assert.equal($('workflow-state').dataset.scene,'route');$('tour-play').click();assert.equal(tick,null);
+  d.querySelector('[data-scene-index="12"]').click();const opening=$('workflow-state').textContent;
+  $('tour-step').click();assert.notEqual($('workflow-state').textContent,opening);assert.match($('workflow-state').textContent,/70/);
+  for(const lang of ['Plain English','Nigerian Pidgin','Yoruba','Hausa','Igbo','English']){
+   $('workspace-language').value=lang;$('workspace-language').dispatchEvent(new dom.window.Event('change'));
+   assert.equal($('eval-language').value,lang);assert.equal($('runnerbot-showcase').dataset.language,lang);
+   assert.ok($('workspace-language-note').textContent.length>20);
+  }
+  for(let i=0;i<15;i++){d.querySelector(`[data-scene-index="${i}"]`).click();assert.equal($('workflow-state').dataset.scene,showcaseScenes[i].id);assert.ok($('workflow-state').querySelector('a').href.startsWith('https://'));}
+  $('tour-reset').click();assert.equal($('workflow-state').dataset.scene,'discover');assert.equal($('tour-play').getAttribute('aria-pressed'),'false');
+ }finally{dom.window.close();Object.assign(globalThis,old);}
 });

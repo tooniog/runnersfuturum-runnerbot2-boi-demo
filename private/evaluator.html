@@ -495,7 +495,7 @@
   </div>
   <div class="prog-grid">
     <div class="prog-card"><span class="tag">Women-Led Business</span><h3 class="display">GLOW</h3><p>Guaranteed Loans for Women — up to ₦50 million at 7% interest, 5-year tenor, for women-owned and women-led enterprises.</p></div>
-    <div class="prog-card"><span class="tag">Tech &amp; Creative</span><h3 class="display">iDICE</h3><p>Supporting Nigerians aged 15–35 in digital and creative enterprise — grants through Founders Lab, debt financing to scale.</p></div>
+    <div class="prog-card"><span class="tag">Tech &amp; Creative</span><h3 class="display">iDICE</h3><p>Digital and creative enterprise support. Check current official iDICE programme criteria and application windows; no eligibility is determined here.</p></div>
     <div class="prog-card"><span class="tag">Grassroots &amp; Micro</span><h3 class="display">Micro Business Financing</h3><p>Tailored, low-interest support for micro-enterprises in disadvantaged and grassroots sectors nationwide.</p></div>
     <div class="prog-card"><span class="tag">Rural &amp; Underserved</span><h3 class="display">RAPID</h3><p>Rural Area Programme on Investment for Development \u2014 financial support and business advisory for nano, micro and small businesses in rural and economically disadvantaged areas.</p></div>
   </div>
@@ -517,7 +517,7 @@
       <div class="fit-arrow">\u2192</div>
       <div class="fit-node">BOI officer / BDSP review</div>
       <div class="fit-arrow">\u2192</div>
-      <div class="fit-node boi">iProgrammes \u2014 BOI\u2019s application gateway</div>
+      <div class="fit-node boi">MyBOI / relevant intervention portal</div>
     </div>
     <div class="fit-note">iProgrammes is BOI\u2019s own centralised digital gateway for intervention fund programmes. Runnerbot 2 sits <strong>in front of it</strong>, not beside it: applicants arrive at iProgrammes already understanding which programme fits them, with documents gathered and questions resolved. Nothing in this concept replaces, duplicates or competes with a BOI-built system.</div>
     <div class="kpi-grid">
@@ -530,7 +530,7 @@
   <div class="why-wrap">
     <div class="section-title">Why BOI?</div>
     <div class="why-grid">
-      <div class="why-card"><div class="why-num">1</div><h3>Entrepreneur Support</h3><p>Guidance in five languages, at any hour, without adding headcount.</p></div>
+      <div class="why-card"><div class="why-num">1</div><h3>Entrepreneur Support</h3><p>Potential language access across six modes. Service availability and language quality require evaluation.</p></div>
       <div class="why-card"><div class="why-num">2</div><h3>Operational Efficiency</h3><p>Routine questions handled by Runnerbot 2, freeing staff and BDSPs for complex cases.</p></div>
       <div class="why-card"><div class="why-num">3</div><h3>National Enterprise Development</h3><p>A scalable support layer aligned with BOI's 2025-2027 Corporate Strategy.</p></div>
     </div>
@@ -558,7 +558,7 @@
     <div class="section-title">AI Safety &amp; Governance</div>
     <div class="section-sub">The principles this pilot is built on \u2014 not a claim, a design constraint.</div>
     <div class="safety-grid">
-      <div class="safety-card"><div class="sf-icon">\uD83D\uDC64</div><h4>Human Oversight</h4><p>Every complex or sensitive case escalates to a BOI officer. Runnerbot 2 makes no lending decisions.</p></div>
+      <div class="safety-card"><div class="sf-icon">\uD83D\uDC64</div><h4>Human Oversight</h4><p>Sensitive decisions require BOI review. This evaluator only prepares guidance; it sends no case or notification and makes no lending decisions.</p></div>
       <div class="safety-card"><div class="sf-icon">\u2705</div><h4>Consent</h4><p>Preferences are only learned with explicit consent \u2014 nothing is inferred silently.</p></div>
       <div class="safety-card"><div class="sf-icon">\u21AA\uFE0F</div><h4>Escalation</h4><p>Escalation is the default whenever confidence is low, not an exception path.</p></div>
       <div class="safety-card"><div class="sf-icon">\uD83D\uDD12</div><h4>Privacy</h4><p>Data collection is limited to what the guidance function needs, aligned with NDPA 2023.</p></div>
@@ -621,14 +621,14 @@
         <h4>A food vendor in Lagos</h4>
         <div class="story-row"><span class="sl">Before</span><span>Selling informally, no records, unsure how to start a BOI application.</span></div>
         <div class="story-row"><span class="sl">Supported</span><span>Guided through CAC registration and a 4-week cost-tracking routine.</span></div>
-        <div class="story-row"><span class="sl">After (illustrative)</span><span>Funding-ready application submitted to Micro Business Financing.</span></div>
+        <div class="story-row"><span class="sl">After (illustrative)</span><span>Preparation pack ready for human review against current programme requirements.</span></div>
       </div>
       <div class="story-card">
         <div class="story-tag">Composite example</div>
         <h4>A tailoring business in Kaduna</h4>
-        <div class="story-row"><span class="sl">Before</span><span>Established business, no idea GLOW existed or that she qualified.</span></div>
-        <div class="story-row"><span class="sl">Supported</span><span>Learned eligibility, gathered financial records with guidance.</span></div>
-        <div class="story-row"><span class="sl">After (illustrative)</span><span>Connected to a BDSP for final review before applying.</span></div>
+        <div class="story-row"><span class="sl">Before</span><span>Established business, unaware of GLOW or its published requirements.</span></div>
+        <div class="story-row"><span class="sl">Supported</span><span>Reviewed published requirements and organised financial records.</span></div>
+        <div class="story-row"><span class="sl">After (illustrative)</span><span>Prepared a summary for an optional BDSP review before applying.</span></div>
       </div>
     </div>
   </div>
@@ -1013,6 +1013,7 @@ function buildLangRow() {
     button.setAttribute("aria-pressed",String(code===currentLang));
     button.onclick=()=>{
       currentLang=code;
+      document.dispatchEvent(new CustomEvent("boi-language",{detail:langLabels[code]}));
       if(code!=="en")plainMode=false;
       buildLangRow();
       updatePlainUI();
@@ -1035,6 +1036,7 @@ function updatePlainUI() {
 function togglePlain() {
   if(currentLang!=="en")return;
   plainMode=!plainMode;
+  document.dispatchEvent(new CustomEvent("boi-language",{detail:selectedLanguage()}));
   updatePlainUI();
   rnStatus.textContent="Next reply: "+selectedLanguage()+".";
 }
@@ -1043,6 +1045,9 @@ document.getElementById("plainSwitch").addEventListener("keydown",e=>{
   if(e.key==="Enter"||e.key===" "){e.preventDefault();togglePlain();}
 });
 
+document.addEventListener("boi-workspace-language",e=>{
+ const pair=Object.entries(langLabels).find(([,label])=>label===e.detail);currentLang=pair?.[0]||"en";plainMode=e.detail==="Plain English";buildLangRow();updatePlainUI();
+});
 function openPanel() {
   document.getElementById("panel").classList.add("open");
   document.getElementById("launcher").style.display="none";
@@ -1178,7 +1183,7 @@ const journeyStages = [
   ["Idea", "Runnerbot helps shape a raw idea into something structured enough to evaluate."],
   ["Validation", "Runnerbot asks the questions that clarify who the customer is and why they'd pay."],
   ["Business Registration", "Runnerbot explains CAC registration steps in plain language, in the entrepreneur's chosen language."],
-  ["Funding Readiness", "Runnerbot builds the personalised checklist and Enterprise Readiness Index for the right programme."],
+  ["Funding Readiness", "Runnerbot organises self-reported preparation categories; this is not a BOI lending score or a programme-specific eligibility check."],
   ["Application", "Runnerbot helps organise documents into a complete, well-structured application."],
   ["BOI Review", "Handled entirely by BOI officers \u2014 by design, Runnerbot's involvement ends here."],
   ["Funding", "The funding decision itself \u2014 entirely BOI's, always."],

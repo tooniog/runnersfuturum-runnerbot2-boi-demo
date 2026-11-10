@@ -1,10 +1,13 @@
+import {EVALUATOR_VERSION} from '../lib/boi-release.mjs';
+import {cacheKey,cachedAnswer,cacheAnswer} from '../lib/boi-cache.mjs';
+import {governanceAction,outputAllowed} from '../lib/boi-governance.mjs';
 import {completedAnswer,citedSources} from "../lib/boi-response.mjs";
 import {readFileSync} from "node:fs";
 import {
   verifySession,cookieValue,secureHeaders,allowedOrigin
 } from "../lib/boi-session.mjs";
 import {
-  budgetAvailable,reserveEstimate,conservativeCharge,reserveBudget,
+  haltBudget,reserveEstimate,conservativeCharge,reserveBudget,
   settleBudget,modelConfig
 } from "../lib/boi-budget.mjs";
 
@@ -91,13 +94,17 @@ export default async function handler(req,res) {
   if(!session||!safeRoles.has(session.role)) return res.status(401).json({error:"EVALUATOR_SIGN_IN_REQUIRED"});
   let input;
   try {input=requestBody(req);} catch {return res.status(400).json({error:"INVALID_REQUEST"});}
+  const priorSensitive=input.history.some(x=>x.role==='user' && /\b(?:bvn|nin|otp|password|pin code)\b|\b\d{10,16}\b/i.test(x.content));
+  if(priorSensitive)return res.status(200).json({answer:"Earlier input contains potentially sensitive data. Clear this conversation and restart with fictional facts only. No model request was made.",classification:"REFUSE",sources:[],externalActionExecuted:false,mode:"deterministic"});
   const refusal=classifiedDecline(input.message);
   if(refusal)return res.status(200).json({answer:refusal,classification:refusal.startsWith("A human")?"ESCALATE":"REFUSE",sources:[],externalActionExecuted:false,mode:"deterministic"});
+  const authority=governanceAction(input.message);
+  if(authority)return res.status(200).json({...authority,sources:[],externalActionExecuted:false,mode:'deterministic'});
   if(process.env.BOI_AI_ENABLED!=="true"||process.env.BOI_AI_PRICING_CONFIRMED!=="true"||
      !process.env.OPENAI_API_KEY||!process.env.DATABASE_URL)
     return res.status(503).json({error:"LIVE_AI_NOT_CONFIGURED",fallback:"The guided evaluator and public BOI reference links remain available."});
   let model;
-  try{model=modelConfig();if(!await budgetAvailable())throw Error("BOI_BUDGET_STOP");}
+  try{model=modelConfig();}
   catch{return res.status(503).json({error:"LIVE_AI_UNAVAILABLE",fallback:"Use the free guided demonstration or official BOI references."});}
   const sources=selectKnowledge(input.history.filter(x=>x.role==="user").map(x=>x.content).join(" ")+" "+input.message,input.perspective);
   const context=sources.map(s=>({
@@ -113,8 +120,11 @@ export default async function handler(req,res) {
     history,
     message:input.message
   });
+  const key=cacheKey(session,prompt,EVALUATOR_VERSION,model);
+  const cached=cachedAnswer(key);
+  if(cached)return res.status(200).json(cached);
   let reservation;
-  try{reservation=await reserveBudget(reserveEstimate({prompt,outputTokens:640}));}
+  try{reservation=await reserveBudget(reserveEstimate({prompt,outputTokens:1024}));}
   catch{return res.status(503).json({error:"LIVE_AI_BUDGET_STOP",fallback:"Use the guided demonstration; no payment or further AI credits are needed."});}
   let payload;
   try {
@@ -130,7 +140,7 @@ export default async function handler(req,res) {
           ...history,
           {role:"user",content:`Perspective: ${input.perspective}. Language: ${input.language}. Question: ${input.message}`}
         ],
-        max_output_tokens:640,
+        max_output_tokens:1024,
         reasoning:{effort:"none"},
         store:false
       }),
@@ -139,21 +149,26 @@ export default async function handler(req,res) {
     if(!request.ok)throw Error("PROVIDER_REJECTED");
     payload=await request.json();
   }catch{
-    // A provider request might have been billed. Reservation intentionally retained.
+    // A provider request might have been billed. Keep reservation and suspend further calls.
+    try{await haltBudget(reservation.id,"PROVIDER_UNAVAILABLE");}catch{}
     return res.status(502).json({error:"AI_PROVIDER_UNAVAILABLE",fallback:"Try the guided evaluation. An unresolved reservation is held for reconciliation."});
   }
   try{
     const charge=conservativeCharge(payload.usage);
     if(charge>reservation.amount)throw Error("CHARGE_EXCEEDS_RESERVATION");
-    await settleBudget(reservation.id,charge);
+    await settleBudget(reservation.id,charge,payload.usage);
   }catch{
+    try{await haltBudget(reservation.id,"USAGE_RECONCILIATION_REQUIRED");}catch{}
     return res.status(502).json({error:"USAGE_RECONCILIATION_REQUIRED",fallback:"Further paid AI usage is restricted pending reconciliation."});
   }
   const {answer,incomplete}=completedAnswer(payload,getAnswer(payload));
   if(!answer)return res.status(502).json({error:"NO_TEXT_RESPONSE",fallback:"Use the guided demonstration."});
-  return res.status(200).json({
+  if(!outputAllowed(answer,new Set(sources.map(s=>s.url).filter(Boolean))))return res.status(200).json({answer:'The generated response did not pass source or authority checks. Please consult the official BOI reference or a human reviewer. No case has been sent.',classification:'ESCALATE',sources:[],mode:'deterministic',externalActionExecuted:false});
+  const result={
     answer,incomplete,classification:incomplete?"INCOMPLETE":"ANSWER",perspective:input.perspective,
     sources:citedSources(answer,sources),
     model,externalActionExecuted:false,mode:"live-ai-boi-evaluation"
-  });
+  };
+  cacheAnswer(key,result);
+  return res.status(200).json(result);
 }

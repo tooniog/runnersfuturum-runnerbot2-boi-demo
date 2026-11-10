@@ -23,6 +23,6 @@ test('export preserves both turns, complete text, naira and source URLs',()=>{
 });
 test('expanded answer allowance is reserved conservatively within existing ceiling',()=>{
  assert.ok(reserveEstimate({prompt:'Test',outputTokens:640})>=conservativeCharge({input_tokens:100,output_tokens:640}));
- assert.throws(()=>reserveEstimate({prompt:'Test',outputTokens:641}));
+ assert.throws(()=>reserveEstimate({prompt:'Test',outputTokens:1025}));
  assert.throws(()=>reserveEstimate({prompt:'Test',outputTokens:NaN}));
 });

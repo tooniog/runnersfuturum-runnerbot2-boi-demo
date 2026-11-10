@@ -5,7 +5,11 @@ const secret="a".repeat(48);
 test("evaluator sessions are signed, scoped, and time-limited",()=>{
  const now=1730000000000;
  const token=makeSession("EVALUATOR_OBSERVER",secret,now);
- assert.deepEqual(verifySession(token,secret,now+1000),{role:"EVALUATOR_OBSERVER",exp:Math.floor(now/1000)+SESSION_MAX_SECONDS});
+ const verified=verifySession(token,secret,now+1000);
+ assert.equal(verified.role,"EVALUATOR_OBSERVER");
+ assert.equal(verified.exp,Math.floor(now/1000)+SESSION_MAX_SECONDS);
+ assert.match(verified.sid,/^[0-9a-f-]{36}$/);
+ assert.notEqual(makeSession("EVALUATOR_OBSERVER",secret,now),token);
  assert.equal(verifySession(token,"b".repeat(48),now+1000),null);
  assert.equal(verifySession(token,secret,now+(SESSION_MAX_SECONDS+1)*1000),null);
  assert.equal(verifySession(token+"tamper",secret,now),null);

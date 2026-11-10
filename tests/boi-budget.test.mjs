@@ -2,13 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {HARD_CEILING_MICRO_USD,NORMAL_STOP_MICRO_USD,reserveEstimate,conservativeCharge,modelConfig} from "../lib/boi-budget.mjs";
 test("hard authorization ceiling and normal stop remain fixed",()=>{
- assert.equal(HARD_CEILING_MICRO_USD,100000);
- assert.equal(NORMAL_STOP_MICRO_USD,80000);
- assert.equal(HARD_CEILING_MICRO_USD-NORMAL_STOP_MICRO_USD,20000);
+ assert.equal(HARD_CEILING_MICRO_USD,300000);
+ assert.equal(NORMAL_STOP_MICRO_USD,270000);
+ assert.equal(HARD_CEILING_MICRO_USD-NORMAL_STOP_MICRO_USD,30000);
 });
 test("reserve estimator rejects oversized and malformed prompts",()=>{
  assert.throws(()=>reserveEstimate({prompt:"x".repeat(26001)}));
- assert.throws(()=>reserveEstimate({prompt:"test",outputTokens:641}));
+ assert.throws(()=>reserveEstimate({prompt:"test",outputTokens:1025}));
  assert.throws(()=>reserveEstimate({prompt:"test",outputTokens:0}));
  assert.throws(()=>reserveEstimate({prompt:null}));
 });
