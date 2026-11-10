@@ -1,11 +1,11 @@
 {
-  "version": "2026-11-09.1",
-  "status": "STAGING_READY_AUTHENTICATED_QA_BLOCKED",
+  "version": "2026-11-10.1",
+  "status": "REMEDIATION_BUILD_PENDING_DEPLOYMENT",
   "commit": "223c670fb95978060f700b021cb68b0536c982ff",
   "stagingDeployment": "dpl_HycTQK9oezEwqXLxkiZ7nPKBTJwv",
   "stagingUrl": "https://runnersfuturum-runnerbot2-boi-demo-9mkg19zaw.vercel.app",
   "automatedTests": {
-    "passed": 58,
+    "passed": 59,
     "failed": 0
   },
   "browserChecks": {
@@ -26,11 +26,10 @@
     "outstandingReservationsUsd": 0
   },
   "authorisedUpgrade": {
-    "ceilingUsd": 0.3,
-    "normalStopUsd": 0.27,
-    "migrationAppliedToProduction": false
+    "ceilingUsd": 0.7,
+    "normalStopUsd": 0.67
   },
-  "notification": "Founder notification pending — manual action required.",
+  "notification": "Founder notification pending \u2014 manual action required.",
   "limitations": [
     "Authenticated staging and live model verification pending; no promotion performed",
     "Partial UI localisation; English financial and source detail retained",

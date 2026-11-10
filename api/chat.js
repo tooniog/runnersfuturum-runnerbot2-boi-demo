@@ -102,7 +102,7 @@ export default async function handler(req,res) {
   if(authority)return res.status(200).json({...authority,sources:[],externalActionExecuted:false,mode:'deterministic'});
   if(process.env.BOI_AI_ENABLED!=="true"||process.env.BOI_AI_PRICING_CONFIRMED!=="true"||
      !process.env.OPENAI_API_KEY||!process.env.DATABASE_URL)
-    return res.status(503).json({error:"LIVE_AI_NOT_CONFIGURED",fallback:"The guided evaluator and public BOI reference links remain available."});
+    return res.status(503).json({error:"LIVE_AI_NOT_CONFIGURED",fallback:"Live AI is switched off in this environment. No model call was made. For a fictional business, gather its activity, location, registration, funding purpose, quotation, contribution and cash-flow records. Use the preparation checklist and financial calculators, then export a summary for a BDSP. Use MyBOI for facility applications or the relevant intervention portal linked by iProgrammes. This is general offline guidance, not a financing decision."});
   let model;
   try{model=modelConfig();}
   catch{return res.status(503).json({error:"LIVE_AI_UNAVAILABLE",fallback:"Use the free guided demonstration or official BOI references."});}
@@ -125,7 +125,7 @@ export default async function handler(req,res) {
   if(cached)return res.status(200).json(cached);
   let reservation;
   try{reservation=await reserveBudget(reserveEstimate({prompt,outputTokens:1024}));}
-  catch{return res.status(503).json({error:"LIVE_AI_BUDGET_STOP",fallback:"Use the guided demonstration; no payment or further AI credits are needed."});}
+  catch(error){return res.status(503).json({error:"LIVE_AI_BUDGET_STOP",fallback:(error.message==="BOI_BUDGET_STOP"?"AI usage limit reached. Contact support for more usage. ":"")+"AI usage is paused. Contact support for more usage or to check service availability. The server could not authorise a budget reservation. No model call was made. For a fictional equipment case, prepare registration details, a supplier quotation, total project costs, the contribution committed and cash-flow records. Use the equipment-funding calculator to reconcile the request, and export a preparation summary for human review. MyBOI handles facility applications; iProgrammes links intervention-fund routes. This is general offline guidance, not an eligibility assessment."});}
   let payload;
   try {
     const request=await fetch("https://api.openai.com/v1/responses",{

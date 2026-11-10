@@ -87,7 +87,7 @@ test("scenario player advances through states, stops and switches all languages 
   for(const lang of ['Plain English','Nigerian Pidgin','Yoruba','Hausa','Igbo','English']){
    $('workspace-language').value=lang;$('workspace-language').dispatchEvent(new dom.window.Event('change'));
    assert.equal($('eval-language').value,lang);assert.equal($('runnerbot-showcase').dataset.language,lang);
-   assert.ok($('workspace-language-note').textContent.length>20);
+   assert.ok($('workspace-language-note').textContent.length>20);if(lang==='Plain English'){assert.equal(d.querySelector('#eval-chat h2').textContent,'Ask a question');assert.match($('workspace-language-note').textContent,/Simple wording is on/);}
   }
   for(let i=0;i<15;i++){d.querySelector(`[data-scene-index="${i}"]`).click();assert.equal($('workflow-state').dataset.scene,showcaseScenes[i].id);assert.ok($('workflow-state').querySelector('a').href.startsWith('https://'));}
   $('tour-reset').click();assert.equal($('workflow-state').dataset.scene,'discover');assert.equal($('tour-play').getAttribute('aria-pressed'),'false');

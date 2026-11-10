@@ -13,7 +13,7 @@ export default async function handler(req,res){
   const budget=await budgetAvailable();available=enabled&&budget;health=available?'READY':enabled?'PAUSED':'DISABLED';
  }catch{health='FAIL_CLOSED';}
  return res.status(200).json({authenticated:true,role:session.role,aiAvailable:available,
-  health,model,version:EVALUATOR_VERSION,checkedAt:new Date().toISOString(),
+  health,model,commit:process.env.VERCEL_GIT_COMMIT_SHA||null,deploymentUrl:process.env.VERCEL_URL||null,version:EVALUATOR_VERSION,checkedAt:new Date().toISOString(),
   environment:process.env.VERCEL_ENV||'local',knowledgeVersion:knowledge.version,
   sourceInventory:knowledge.sources.map(({title,url,category,verifiedOn,publicationDate})=>({title,url,category,verifiedOn,publicationDate})),
   noBoiSystemsConnected:true,
