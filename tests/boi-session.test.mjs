@@ -13,7 +13,7 @@ test("evaluator sessions are signed, scoped, and time-limited",()=>{
  assert.equal(verifySession(token,"b".repeat(48),now+1000),null);
  assert.equal(verifySession(token,secret,now+(SESSION_MAX_SECONDS+1)*1000),null);
  assert.equal(verifySession(token+"tamper",secret,now),null);
- assert.equal(verifySession(token.replace(/.$/,"0"),secret,now),null);
+ assert.equal(verifySession(token.slice(0,-1)+(token.endsWith("0")?"1":"0"),secret,now),null);
 });
 test("reject forged privilege and malformed session tokens",()=>{
  const token=makeSession("EVALUATOR_OBSERVER",secret);

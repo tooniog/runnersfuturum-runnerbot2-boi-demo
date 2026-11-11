@@ -5,7 +5,7 @@
   "stagingDeployment": "dpl_HycTQK9oezEwqXLxkiZ7nPKBTJwv",
   "stagingUrl": "https://runnersfuturum-runnerbot2-boi-demo-9mkg19zaw.vercel.app",
   "automatedTests": {
-    "passed": 59,
+    "passed": 62,
     "failed": 0
   },
   "browserChecks": {
