@@ -2,6 +2,7 @@ import {readFileSync} from 'node:fs';
 import {verifySession,cookieValue,secureHeaders} from '../lib/boi-session.mjs';
 import {budgetAvailable,modelConfig} from '../lib/boi-budget.mjs';
 import {EVALUATOR_VERSION} from '../lib/boi-release.mjs';
+import {publicAccess} from '../lib/boi-access.mjs';
 const knowledge=JSON.parse(readFileSync(new URL('../data/boi-knowledge-v1.json',import.meta.url),'utf8'));
 export default async function handler(req,res){
  secureHeaders(res);
@@ -12,7 +13,7 @@ export default async function handler(req,res){
  try{model=modelConfig();const enabled=process.env.BOI_AI_ENABLED==='true'&&process.env.BOI_AI_PRICING_CONFIRMED==='true'&&!!process.env.OPENAI_API_KEY;
   const budget=await budgetAvailable();available=enabled&&budget;health=available?'READY':enabled?'PAUSED':'DISABLED';
  }catch{health='FAIL_CLOSED';}
- return res.status(200).json({authenticated:true,role:session.role,aiAvailable:available,
+ return res.status(200).json({authenticated:true,...publicAccess(session),aiAvailable:available,
   health,model,commit:process.env.VERCEL_GIT_COMMIT_SHA||null,deploymentUrl:process.env.VERCEL_URL||null,version:EVALUATOR_VERSION,checkedAt:new Date().toISOString(),
   environment:process.env.VERCEL_ENV||'local',knowledgeVersion:knowledge.version,
   sourceInventory:knowledge.sources.map(({title,url,category,verifiedOn,publicationDate})=>({title,url,category,verifiedOn,publicationDate})),

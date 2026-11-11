@@ -1,4 +1,5 @@
 import {EVALUATOR_VERSION} from '../lib/boi-release.mjs';
+import {hasPermission} from '../lib/boi-access.mjs';
 import {cacheKey,cachedAnswer,cacheAnswer} from '../lib/boi-cache.mjs';
 import {governanceAction,outputAllowed,safeCredentialQuestion,sensitiveDisclosure} from '../lib/boi-governance.mjs';
 import {completedAnswer,citedSources} from "../lib/boi-response.mjs";
@@ -13,7 +14,6 @@ import {
 
 const knowledge=JSON.parse(readFileSync(new URL("../data/boi-knowledge-v1.json",import.meta.url),"utf8"));
 const perspectives=new Set(["Applicant","Executive","Technology"]);
-const safeRoles=new Set(["EVALUATOR_OBSERVER","RUNNERS_ADMIN"]);
 const STOP=new Set(["the","and","you","for","what","with","from","about","have","how","this","that","they","will","where","which","there","your","their","into","can","would","should","does"]);
 function keywords(text) {
   return [...new Set(String(text).toLowerCase().match(/[a-z]{3,}/g)?.filter(x=>!STOP.has(x))||[])];
@@ -91,7 +91,8 @@ export default async function handler(req,res) {
   if(req.method!=="POST") return res.status(405).json({error:"METHOD_NOT_ALLOWED"});
   if(!allowedOrigin(req)) return res.status(403).json({error:"ORIGIN_NOT_ALLOWED"});
   const session=verifySession(cookieValue(req),process.env.BOI_COOKIE_SECRET);
-  if(!session||!safeRoles.has(session.role)) return res.status(401).json({error:"EVALUATOR_SIGN_IN_REQUIRED"});
+  if(!session) return res.status(401).json({error:"EVALUATOR_SIGN_IN_REQUIRED"});
+  if(!hasPermission(session,'evaluate')) return res.status(403).json({error:'PERMISSION_DENIED'});
   let input;
   try {input=requestBody(req);} catch {return res.status(400).json({error:"INVALID_REQUEST"});}
   const priorSensitive=input.history.some(x=>x.role==='user' && sensitiveDisclosure(x.content));

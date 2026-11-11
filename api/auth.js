@@ -1,5 +1,6 @@
 import {createHash} from "node:crypto";
 import {neon} from "@neondatabase/serverless";
+import {authenticateIdentity,publicAccess} from '../lib/boi-access.mjs';
 import {
   SESSION_COOKIE, SESSION_MAX_SECONDS, constantTimePasswordMatch,
   makeSession, verifySession, cookieValue, setSessionCookie,
@@ -23,7 +24,7 @@ export default async function handler(req,res) {
   const secret=process.env.BOI_COOKIE_SECRET;
   if(req.method==="GET") {
     const session=verifySession(cookieValue(req),secret);
-    return res.status(200).json({authenticated:!!session,role:session?.role??null,sessionExpiresAt:session?.exp??null});
+    return res.status(200).json({authenticated:!!session,...publicAccess(session),sessionExpiresAt:session?.exp??null});
   }
   if(req.method!=="POST") return res.status(405).json({error:"METHOD_NOT_ALLOWED"});
   if(!allowedOrigin(req)) return res.status(403).json({error:"ORIGIN_NOT_ALLOWED"});
@@ -33,20 +34,21 @@ export default async function handler(req,res) {
     return res.status(200).json({authenticated:false});
   }
   if(action!=="login") return res.status(404).json({error:"UNKNOWN_AUTH_ACTION"});
-  if(!secret || secret.length<32 || !process.env.BOI_EVALUATOR_PASSWORD ||
+  if(!secret || secret.length<32 || (!process.env.BOI_EVALUATOR_PASSWORD && !process.env.BOI_TEST_IDENTITIES_JSON) ||
      !process.env.DATABASE_URL) return res.status(503).json({error:"EVALUATOR_ACCESS_NOT_CONFIGURED"});
   const sql=neon(process.env.DATABASE_URL);
   try {
-    const {password}=body(req);
-    if(typeof password!=="string" || password.length>128) return res.status(400).json({error:"INVALID_CREDENTIALS"});
+    const {username,password}=body(req);
+    if(typeof password!=="string" || password.length>128 || (username!==undefined && (typeof username!=='string'||username.length>64))) return res.status(400).json({error:"INVALID_CREDENTIALS"});
     const fp=fingerprint(req,secret);
     const attempts=await sql`SELECT blocked_until FROM boi_auth_throttle WHERE fingerprint=${fp}`;
     const until=attempts[0]?.blocked_until;
     if(until && new Date(until).getTime()>Date.now()) return res.status(429).json({error:"SIGN_IN_TEMPORARILY_UNAVAILABLE"});
-    const role=constantTimePasswordMatch(password,process.env.BOI_ADMIN_PASSWORD)
+    const identity=username?.trim()?authenticateIdentity(username,password):null;
+    const role=username?.trim()?identity?.role:(process.env.BOI_ALLOW_LEGACY_ACCESS==='false'?null:constantTimePasswordMatch(password,process.env.BOI_ADMIN_PASSWORD)
       ? "RUNNERS_ADMIN"
       : constantTimePasswordMatch(password,process.env.BOI_EVALUATOR_PASSWORD)
-        ? "EVALUATOR_OBSERVER" : null;
+        ? "EVALUATOR_OBSERVER" : null);
     if(!role) {
       await sql`
         INSERT INTO boi_auth_throttle(fingerprint,failures,window_started,blocked_until)
@@ -63,9 +65,9 @@ export default async function handler(req,res) {
       return res.status(401).json({error:"INVALID_CREDENTIALS"});
     }
     await sql`DELETE FROM boi_auth_throttle WHERE fingerprint=${fp}`;
-    const token=makeSession(role,secret);
+    const token=makeSession(role,secret,Date.now(),identity);
     setSessionCookie(res,token,SESSION_MAX_SECONDS);
-    return res.status(200).json({authenticated:true,role});
+    return res.status(200).json({authenticated:true,...publicAccess(verifySession(token,secret))});
   } catch(error) {
     // Never expose internal errors or secret configuration to evaluator users.
     return res.status(503).json({error:"SIGN_IN_UNAVAILABLE"});

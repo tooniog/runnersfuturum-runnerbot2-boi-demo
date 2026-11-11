@@ -1,11 +1,11 @@
 {
-  "version": "2026-11-10.1",
+  "version": "2026-11-11.2",
   "status": "REMEDIATION_BUILD_PENDING_DEPLOYMENT",
   "commit": "223c670fb95978060f700b021cb68b0536c982ff",
   "stagingDeployment": "dpl_HycTQK9oezEwqXLxkiZ7nPKBTJwv",
   "stagingUrl": "https://runnersfuturum-runnerbot2-boi-demo-9mkg19zaw.vercel.app",
   "automatedTests": {
-    "passed": 62,
+    "passed": 72,
     "failed": 0
   },
   "browserChecks": {
