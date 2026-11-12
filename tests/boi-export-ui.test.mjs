@@ -14,7 +14,7 @@ test('actual chat and export handlers preserve both turns, cited URLs and clear 
   const secondQuestion='Equipment ₦12 million, funds ₦3 million, draft request ₦10 million. Identify the inconsistency.';
   const firstAnswer='General preparation guidance. '+('Full preparation detail. '.repeat(60))+`See [BOI advisory](${advisory.url}).`;
   const secondAnswer=`₦9 million funding gap if available funds are committed; ₦1 million unexplained. Registered cassava processor in Ogun State. See [BOI advisory](${advisory.url}).`;
-  const replies=[firstAnswer,secondAnswer].map(answer=>({answer,sources:citedSources(answer,[advisory,impact]),classification:'ANSWER',mode:'test-fixture'}));
+  const replies=[firstAnswer,secondAnswer].map(answer=>({answer,sources:citedSources(answer,[advisory,impact]),classification:'ANSWER',mode:'live-ai-boi-evaluation',evaluationRequestId:'request-fixture-1',providerResponseId:'resp_fixture_1',releaseCommit:'abc123'}));
   const dom=new JSDOM('<body><div class="transparency-banner"></div></body>',{url:'https://evaluator.example/?_vercel_share=private-share#private-fragment'});
   const originals=new Map(['document','location','fetch'].map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));
   const oldCreate=URL.createObjectURL,oldRevoke=URL.revokeObjectURL;
@@ -44,7 +44,7 @@ test('actual chat and export handlers preserve both turns, cited URLs and clear 
     const exported=await blob.text();
     assert.equal(downloads[0].filename,'boi-evaluation-conversation.txt');
     for(const text of [firstQuestion,firstAnswer,secondQuestion,secondAnswer,advisory.url,advisory.title,EVALUATOR_VERSION])assert.ok(exported.includes(text),text);
-    assert.match(exported,/Sources:\n/);
+    assert.match(exported,/Sources:\n/);assert.match(exported,/evaluationRequestId: request-fixture-1/);assert.match(exported,/providerResponseId: resp_fixture_1/);
     assert.match(exported,/Page origin: https:\/\/evaluator.example/);
     assert.doesNotMatch(exported,/private-share|private-fragment|_vercel_share/);
     assert.ok(!exported.includes(impact.url));assert.ok(!exported.includes(impact.title));

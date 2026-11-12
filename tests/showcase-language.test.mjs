@@ -89,7 +89,7 @@ test("scenario player advances through states, stops and switches all languages 
    assert.equal($('eval-language').value,lang);assert.equal($('runnerbot-showcase').dataset.language,lang);
    assert.ok($('workspace-language-note').textContent.length>20);if(lang==='Plain English'){assert.equal(d.querySelector('#eval-chat h2').textContent,'Ask a question');assert.match($('workspace-language-note').textContent,/Simple wording is on/);}
   }
-  for(let i=0;i<15;i++){d.querySelector(`[data-scene-index="${i}"]`).click();assert.equal($('workflow-state').dataset.scene,showcaseScenes[i].id);assert.ok($('workflow-state').querySelector('a').href.startsWith('https://'));}
+  for(let i=0;i<15;i++){d.querySelector(`[data-scene-index="${i}"]`).click();assert.equal($('workflow-state').dataset.scene,showcaseScenes[i].id);assert.ok($('workflow-state').querySelector('a').href.startsWith('https://'));for(let step=0;step<3;step++){assert.equal($('workflow-state').dataset.step,String(step));assert.equal($('workflow-state').dataset.scene,showcaseScenes[i].id);if(step<2)$('tour-step').click();}}
   $('tour-reset').click();assert.equal($('workflow-state').dataset.scene,'discover');assert.equal($('tour-play').getAttribute('aria-pressed'),'false');
  }finally{dom.window.close();Object.assign(globalThis,old);}
 });

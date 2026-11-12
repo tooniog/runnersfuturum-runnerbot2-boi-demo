@@ -1,39 +1,28 @@
 {
-  "version": "2026-11-11.2",
-  "status": "REMEDIATION_BUILD_PENDING_DEPLOYMENT",
-  "commit": "223c670fb95978060f700b021cb68b0536c982ff",
-  "stagingDeployment": "dpl_HycTQK9oezEwqXLxkiZ7nPKBTJwv",
-  "stagingUrl": "https://runnersfuturum-runnerbot2-boi-demo-9mkg19zaw.vercel.app",
+  "version": "2026-11-12.1",
+  "status": "AUTOMATED_FIXTURES_PASSED_LIVE_RETEST_PENDING",
   "automatedTests": {
-    "passed": 72,
+    "passed": 79,
     "failed": 0
   },
-  "browserChecks": {
-    "environment": "local synthetic fixture",
-    "desktop": true,
-    "mobileViewportWidth": 375,
-    "mobileScrollWidth": 375,
-    "forecastStep2ThirdMonthClosingNgn": 680000,
-    "yorubaControls": true
-  },
-  "productionChanged": false,
-  "productionRollbackDeployment": "dpl_7x71Dw3g76xP8LuZpdeYbyVUjLwx",
+  "productionRollbackDeployment": "dpl_7TxdUiXqCTEgYTkbuo8QJV6dHyUZ",
   "paidAiCallsThisContinuation": 0,
-  "productionLedger": {
-    "ceilingUsd": 0.1,
-    "normalStopUsd": 0.08,
-    "conservativeDebitUsd": 0.011352,
+  "productionLedgerObserved": {
+    "observedOn": "2026-11-12",
+    "ceilingUsd": 0.7,
+    "normalStopUsd": 0.67,
+    "conservativeDebitUsd": 0.036489,
     "outstandingReservationsUsd": 0
   },
-  "authorisedUpgrade": {
-    "ceilingUsd": 0.7,
-    "normalStopUsd": 0.67
+  "isolatedDatabaseChecks": {
+    "branch": "br-rough-union-zayt6t17",
+    "concurrentReservations": "one accepted, one rejected at stop",
+    "settlement": "same-charge repeat idempotent; exhaustion remains sticky"
   },
-  "notification": "Founder notification pending \u2014 manual action required.",
   "limitations": [
-    "Authenticated staging and live model verification pending; no promotion performed",
-    "Partial UI localisation; English financial and source detail retained",
-    "No native-speaker financial validation",
+    "Authenticated browser, 390px layout and keyboard checks blocked after secure sign-in declined",
+    "Live model and provider-log correlation not rerun in this continuation",
+    "Native-speaker financial terminology review remains outstanding",
     "No BOI system access, real applicant processing or endorsement"
   ]
 }

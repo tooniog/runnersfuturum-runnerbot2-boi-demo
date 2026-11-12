@@ -64,7 +64,7 @@ export function classifiedDecline(message) {
     return "Runnerbot 2 cannot approve, reject or guarantee BOI financing. Decisions belong solely to authorised BOI officers. I can help you prepare and identify published requirements; use the official BOI portal for any formal application.";
   if(/\b(?:show|access|retrieve|read|leak)\b.{0,40}\b(?:confidential|internal\s+applicant|private\s+bank|loan\s+records)\b/i.test(message))
     return "This evaluator does not have access to confidential BOI systems, internal records or applicant files. For a real case, contact BOI through its verified official channels.";
-  if(/\b(?:my|actual|real)\s+(?:application|loan)\s+(?:status|progress)|(?:speak|talk|connect|refer).{0,25}(?:human|officer|person)|human\s+(?:help|review|support)/i.test(message))
+  if(/\b(?:my|actual|real)\s+(?:application|loan)\s+(?:status|progress)|(?:speak|talk|connect|refer).{0,25}(?:human|officer|person)|(?:^|[.!?]\s*)(?:(?:please|i need|we need|i want|we want|request)\s+)(?:a\s+)?human\s+(?:help|review|support)\b/i.test(message))
     return "A human BOI reviewer must handle this. No case has been sent and this evaluator cannot read application status. Use your own MyBOI account or BOI Customer Care: https://onlineportal.boi.ng/pcm/contact . I can help prepare a synthetic summary without personal details.";
   return null;
 }
@@ -163,15 +163,17 @@ export default async function handler(req,res) {
     try{await haltBudget(reservation.id,"USAGE_RECONCILIATION_REQUIRED");}catch{}
     return res.status(502).json({error:"USAGE_RECONCILIATION_REQUIRED",fallback:"Further paid AI usage is restricted pending reconciliation."});
   }
-  const {answer,incomplete}=completedAnswer(payload,getAnswer(payload).replace(/^#{1,6}\s+/gm,'').replace(/\*\*([^*\n]+)\*\*/g,'$1'));
-  if(!answer)return res.status(502).json({error:"NO_TEXT_RESPONSE",fallback:"Use the guided demonstration."});
-  if(!outputAllowed(answer,new Set(sources.map(s=>s.url).filter(Boolean))))return res.status(200).json({answer:'The generated response did not pass source or authority checks. Please consult the official BOI reference or a human reviewer. No case has been sent.',classification:'ESCALATE',sources:[],mode:'deterministic',externalActionExecuted:false});
+  const provenance={evaluationRequestId:reservation.id,providerResponseId:payload.id||null,releaseVersion:EVALUATOR_VERSION,releaseCommit:process.env.VERCEL_GIT_COMMIT_SHA||null};
+  console.info(JSON.stringify({event:'BOI_INFERENCE_RECONCILED',...provenance,model,inputTokens:payload.usage.input_tokens,outputTokens:payload.usage.output_tokens}));
+  const text=getAnswer(payload).replace(/^#{1,6}\s+/gm,'').replace(/\*\*([^*\n]+)\*\*/g,'$1');
+  if(!text.trim())return res.status(502).json({...provenance,mode:'filtered-ai',error:"NO_TEXT_RESPONSE",fallback:"The model returned no usable text. Use the guided demonstration. No automatic retry was made."});
+  const {answer,incomplete}=completedAnswer(payload,text);
+  if(!outputAllowed(answer,new Set(sources.map(s=>s.url).filter(Boolean))))return res.status(200).json({...provenance,answer:'The generated response did not pass source or authority checks. Please consult the official BOI reference or a human reviewer. No case has been sent.',classification:'ESCALATE',sources:[],mode:'filtered-ai',externalActionExecuted:false});
   const result={
-    evaluationRequestId:reservation.id,providerResponseId:payload.id||null,answer,incomplete,classification:incomplete?"INCOMPLETE":"ANSWER",perspective:input.perspective,
+    evaluationRequestId:reservation.id,providerResponseId:payload.id||null,releaseVersion:EVALUATOR_VERSION,releaseCommit:process.env.VERCEL_GIT_COMMIT_SHA||null,answer,incomplete,classification:incomplete?"INCOMPLETE":"ANSWER",perspective:input.perspective,
     sources:citedSources(answer,sources),
     model,externalActionExecuted:false,mode:"live-ai-boi-evaluation"
   };
-  console.info(JSON.stringify({event:'BOI_INFERENCE_RECONCILED',evaluationRequestId:reservation.id,providerResponseId:payload.id||null,model,inputTokens:payload.usage.input_tokens,outputTokens:payload.usage.output_tokens}));
   cacheAnswer(key,result);
   return res.status(200).json(result);
 }
